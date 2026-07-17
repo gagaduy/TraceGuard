@@ -1,0 +1,98 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+openapi: 3.1.0
+info:
+  title: TraceGuard API
+  version: 0.0.0
+  description: Public HTTP contract for the TraceGuard business API and platform health endpoints.
+  license:
+    name: Apache License 2.0
+    identifier: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: /
+    description: Same origin as the deployed API
+tags:
+  - name: Platform
+    description: Process and dependency health endpoints.
+paths:
+  /health/live:
+    get:
+      operationId: getLiveness
+      summary: Check whether the API process is alive
+      tags: [Platform]
+      responses:
+        "200":
+          description: The API process is alive.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        4XX:
+          description: The health request was rejected by an access or request policy.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+  /health/ready:
+    get:
+      operationId: getReadiness
+      summary: Check whether the API can serve requests
+      tags: [Platform]
+      responses:
+        "200":
+          description: The API and required dependencies are ready.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "503":
+          description: A required dependency is unavailable.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+        4XX:
+          description: The health request was rejected by an access or request policy.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        checks:
+          type: object
+          additionalProperties:
+            type: string
+            enum: [ok]
+    ProblemDetails:
+      type: object
+      description: RFC 9457 problem detail returned by TraceGuard HTTP APIs.
+      additionalProperties: true
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri-reference
+        correlationId:
+          type: string

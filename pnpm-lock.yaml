@@ -10,6 +10,9 @@ importers:
       "@eslint/js":
         specifier: 10.0.1
         version: 10.0.1(eslint@10.7.0)
+      "@redocly/cli":
+        specifier: 2.39.0
+        version: 2.39.0
       eslint:
         specifier: 10.7.0
         version: 10.7.0
@@ -124,6 +127,14 @@ packages:
         integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==,
       }
     engines: { node: ">=18.18" }
+
+  "@redocly/cli@2.39.0":
+    resolution:
+      {
+        integrity: sha512-xA0Z9YMEhlzbpn/BVErlE2UzuKfahp9llBwEnVtAYuhWdF8UCIm+cgYX8f/gHQIJ/TKwB93awAewTOgEsbZFZw==,
+      }
+    engines: { node: ">=22.12.0 || >=20.19.0 <21.0.0", npm: ">=10" }
+    hasBin: true
 
   "@turbo/darwin-64@2.10.5":
     resolution:
@@ -791,6 +802,8 @@ snapshots:
   "@humanwhocodes/module-importer@1.0.1": {}
 
   "@humanwhocodes/retry@0.4.3": {}
+
+  "@redocly/cli@2.39.0": {}
 
   "@turbo/darwin-64@2.10.5":
     optional: true

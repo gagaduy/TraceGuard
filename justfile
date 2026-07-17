@@ -78,6 +78,9 @@ license-audit:
 security:
     pnpm audit --audit-level high
 
-check: format-check lint typecheck test build
+openapi:
+    pnpm run openapi:lint
+
+check: format-check lint typecheck test build openapi
 
 ci: check test-integration test-e2e license-audit security

@@ -18,5 +18,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Add the pnpm and Turborepo workspace foundation, shared TypeScript quality configuration, stable `just` command interface, and local toolchain diagnostics.
 - Add a profile-based Docker Compose environment for PostgreSQL, Valkey, object storage, Temporal, Keycloak, local mail, and the observability stack.
 - Add GitHub Actions validation and scoped Dependabot updates for workspace dependencies, Compose images, and workflow actions.
+- Define the shared OpenAPI 3.1 contract for liveness, readiness, and RFC 9457 Problem Details responses.
 
 [Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main
