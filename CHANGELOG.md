@@ -11,6 +11,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+- Reduce the mature database design from 117 tables to a need-driven ceiling of 60 without weakening tenant, audit, approval, or migration guarantees.
 - Add the executable Phase 0 database foundation implementation plan.
 - Publish the accepted database RFC and phased implementation roadmap.
 - Add a portable open-source repository skill and root agent guide for handoff.

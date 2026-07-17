@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Phase 0 Database Foundation Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Also follow `.agents/skills/traceguard-database/SKILL.md` throughout execution.
+> **For agentic workers:** Follow `.agents/skills/build-open-source-repository/SKILL.md` and execute this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Establish the PostgreSQL 18 foundation, least-privilege roles, fail-closed tenant context, append-only audit, transactional outbox, idempotency, retention policy, isolated integration tests, and migration guarantees required by RFC 0001 Phase 0.
 

@@ -67,11 +67,11 @@ The database uses separate migration, application, worker, and read-only auditor
 
 ### Versioning and append-only records
 
-Versioning is selective. Evidence, policies, approval matrices, recall options, recall plans, notification templates, trust snapshots, simulations, and scoring methods have immutable version or snapshot records. Operational aggregates retain their current state plus append-only state-transition history.
+Versioning is selective. Evidence keeps explicit `evidence_versions` because binary provenance and legal hold have an independent lifecycle. Policies, approval matrices, recall options, recall plans, and notification templates store immutable version rows in their owning table using a logical identifier plus a monotonically increasing version. Trust snapshots and simulation runs are immutable snapshots.
 
 Effective dating with `valid_from` and `valid_to` is limited to facts whose business validity changes over time, including product composition and supplier relationships. The design does not impose bitemporal modeling on every table.
 
-Evidence versions, custody events, approval decisions, approval invalidations, decision logs, state transitions, and audit events cannot be updated or deleted by runtime roles. Database privileges and defensive triggers enforce this rule.
+Custody events, approval decisions, approval invalidations, decision logs, consequential version rows, and audit events cannot be updated or deleted by runtime roles. Important state transitions are recorded as typed `audit_events` with before and after state instead of one transition table per aggregate. Database privileges and defensive triggers enforce these rules.
 
 ### Evidence storage and privacy
 
@@ -83,9 +83,9 @@ Retention is defined by data class. Evidence, approval, decision, and audit reco
 
 ### Relational model and Evidence Graph
 
-Explicit relational join tables enforce business invariants, such as `incident_batches` and `evidence_claim_links`. A normalized `graph_nodes` and `graph_edges` representation supplements those tables for evidence traversal and explanation. Relational data remains authoritative.
+Explicit relational links enforce business invariants. Consolidated scope tables use nullable typed foreign keys plus a `CHECK` requiring exactly one supported target, so fewer tables do not weaken referential integrity. Flexible metadata never replaces tenant keys, consequential state, money, authorization, or required foreign keys.
 
-Initial graph queries use recursive PostgreSQL CTEs. Full-text search and pgvector support hybrid evidence retrieval, while PostGIS supports geographic recall scope. A separate graph or search database requires measured evidence that PostgreSQL is insufficient.
+`evidence_relations` is the initial Evidence Graph and retains direction, relationship type, provenance, effective time, and source-version references. Initial traversal uses recursive PostgreSQL CTEs; separate graph-node and graph-edge tables are deferred until measured query or integrity requirements justify them. Full-text search and pgvector support hybrid evidence retrieval, while PostGIS supports geographic recall scope.
 
 ## Schema organization
 
@@ -97,31 +97,31 @@ packages/database/src/schema/
 ├── identity/
 ├── supply/
 ├── evidence/
-├── detection/
 ├── incidents/
 ├── trust/
 ├── recall/
 ├── governance/
 ├── execution/
 ├── recovery/
-├── capa/
 └── platform/
 ```
 
 Each module owns focused table definitions, constraints, indexes, relations, and exported types. The root schema index re-exports domain modules for Drizzle migration generation.
 
+The mature schema has a design ceiling of 60 tables, not a quota. A table outside this design requires an independent lifecycle, a constraint or foreign key that cannot be protected safely when consolidated, and a critical query that needs its own indexing boundary. If the complete product needs fewer tables, no placeholder tables are added.
+
 ## Delivery phases
 
 ### Phase 0: Database foundation
 
-Enable pgvector, PostGIS, and approved crypto or search extensions. Add database roles, RLS context helpers, append-only protection, and the cross-cutting tables:
+Enable pgvector, PostGIS, and approved crypto or search extensions. Add database roles, RLS context helpers, append-only protection, and four cross-cutting tables:
 
 - `audit_events`
 - `outbox_events`
 - `idempotency_records`
 - `retention_policies`
 
-`audit_events` is append-only and time-partitioned. The phase includes migration testing from an empty database and from the existing organization-only schema.
+`audit_events` is append-only and time-partitioned. Typed events retain consequential state-transition history. The phase includes migration testing from an empty database and from the existing organization-only schema. With the existing `organizations` table, Phase 0 ends with five tables.
 
 ### Phase 1: Identity and organization
 
@@ -129,157 +129,100 @@ Enable pgvector, PostGIS, and approved crypto or search extensions. Add database
 - `users`
 - `organization_memberships`
 - `roles`
-- `permissions`
-- `role_permissions`
-- `membership_roles`
-- `scope_grants`
-- `authority_grants`
-- `membership_state_transitions`
+- `role_assignments`
 
-Keycloak subjects identify users, but TraceGuard owns membership state, roles, authority, scopes, and business authorization. Revoking a membership removes access without deleting the user or historical actions.
+Keycloak subjects identify users, but TraceGuard owns membership state and business authorization. Roles carry validated permission codes; assignments carry constrained authority and resource scope. Revoking a membership removes access without deleting the user or historical actions. This phase adds four new tables and brings the cumulative total to nine.
 
 ### Phase 2: Product and supply network
 
 - `products`
-- `product_variants`
 - `batches`
-- `serial_ranges`
 - `suppliers`
 - `facilities`
 - `components`
 - `product_components`
 - `batch_components`
-- `markets`
-- `jurisdictions`
-- `market_jurisdictions`
 - `shipments`
 - `shipment_items`
-- `shipment_stops`
-- `recipient_references`
 
-Product composition and supplier relationships support effective dating. `batch_components` records actual inputs rather than only expected bill-of-material facts. Shipment data is restricted to traceability and exposure analysis.
+Product variants are product rows linked to a parent product. Product composition and supplier relationships support effective dating. `batch_components` records actual inputs rather than only expected composition. Shipment items retain the minimum market, route, and pseudonymous recipient snapshot required for traceability. This phase brings the cumulative total to 18.
 
-### Phase 3: Evidence, claims, and graph
+### Phase 3: Evidence, claims, and relations
 
 - `evidence_sources`
 - `evidence`
 - `evidence_versions`
-- `evidence_objects`
 - `claims`
 - `evidence_claim_links`
 - `chain_of_custody_events`
-- `legal_holds`
 - `evidence_relations`
-- `graph_nodes`
-- `graph_edges`
-- `graph_edge_versions`
 
-Evidence versions, custody events, and graph-edge versions are append-only. Graph edges retain direction, relationship type, provenance, effective time, and the source version that asserted the relationship.
+Evidence versions and custody events are append-only. Object location, checksum, classification, retention, and legal-hold state belong to evidence versions. `evidence_relations` provides the initial directed Evidence Graph without duplicate graph-node and graph-edge tables. This phase brings the cumulative total to 25.
 
 ### Phase 4: Signals, incidents, and investigation
 
 - `signals`
 - `signal_occurrences`
-- `signal_assessments`
-- `signal_deduplication_links`
-- `signal_evidence`
+- `assessments`
 - `incidents`
 - `incident_signals`
 - `incident_evidence`
-- `incident_claims`
-- `incident_products`
-- `incident_batches`
-- `incident_facilities`
-- `incident_assessments`
+- `incident_scope_items`
 - `investigation_tasks`
 - `decision_logs`
-- `incident_state_transitions`
 
-Specific incident relation tables are used instead of a polymorphic subject table. Closing an incident without recall requires a decision log with actor, reason, evidence references, and the assessment version used.
+`assessments` has nullable signal and incident foreign keys with a check requiring exactly one owner. `incident_scope_items` uses typed nullable foreign keys with an exactly-one-target check for products, batches, and facilities; market scope uses validated codes. Closing an incident without recall requires an immutable decision log referencing actor, reason, evidence, and assessment version. This phase brings the cumulative total to 34.
 
-### Phase 5: Trust state and recall simulation
+### Phase 5: Trust state and recall planning
 
 - `scoring_methods`
 - `trust_snapshots`
-- `trust_dimensions`
-- `trust_observations`
-- `trust_change_reasons`
 - `recall_options`
-- `recall_option_versions`
-- `recall_option_batches`
-- `recall_option_markets`
-- `recall_option_recipients`
+- `recall_scope_items`
 - `simulation_runs`
-- `simulation_inputs`
-- `impact_estimates`
+- `recall_plans`
 
-Trust snapshots and simulation results are immutable. Every score includes a method version, input references, explanation, and uncertainty. Recall options remain proposals and cannot authorize execution.
+Trust snapshots and simulation runs are immutable. Dimensions, inputs, results, explanations, and uncertainty use schema-versioned snapshots where independent querying is not required. Recall options and plans keep immutable version rows in their owning table. Scope items retain typed foreign keys or validated market and recipient references. Options remain proposals and cannot authorize execution. This phase brings the cumulative total to 40.
 
-### Phase 6: Policy, approval, and recall plans
+### Phase 6: Policy and approval
 
 - `policies`
-- `policy_versions`
 - `approval_matrices`
-- `approval_matrix_versions`
-- `policy_evaluations`
 - `approval_requests`
-- `approval_requirements`
 - `approval_decisions`
 - `approval_invalidations`
-- `strong_auth_evidence`
-- `recall_plans`
-- `recall_plan_versions`
 
-An approval decision references exact option, policy, approval-matrix, and evidence snapshot versions. A material change to scope, severity, evidence, or policy creates an invalidation record and requires reevaluation; existing decisions are never overwritten.
+Policies and matrices keep immutable version rows. Approval requests retain the exact policy evaluation, requirements, option version, evidence snapshot, and matrix version reviewed. Strong-auth evidence belongs to the immutable decision. Material scope, severity, evidence, or policy changes append invalidation records and require reevaluation. This phase brings the cumulative total to 45.
 
 ### Phase 7: Recall execution and communication
 
 - `recall_executions`
-- `workflow_references`
 - `action_tasks`
 - `action_attempts`
 - `affected_items`
-- `item_dispositions`
-- `execution_exceptions`
-- `execution_state_transitions`
-- `regulatory_packages`
 - `notification_templates`
-- `notification_template_versions`
 - `notifications`
-- `notification_recipients`
 - `delivery_attempts`
-- `acknowledgements`
 
-Every retryable side effect carries an idempotency key. Temporal workflow and run identifiers are auditable coordination references; PostgreSQL retains authoritative execution state. Notification content references the approved recall-plan version.
+Every retryable side effect carries an idempotency key. PostgreSQL retains authoritative execution state while Temporal identifiers are auditable coordination references. A notification row represents one recipient and retains content, template version, delivery state, and acknowledgement state; provider attempts remain separate. This phase brings the cumulative total to 52.
 
 ### Phase 8: Recovery and CAPA
 
 - `recovery_metric_definitions`
 - `recovery_measurements`
-- `recovery_snapshots`
 - `capas`
-- `root_causes`
 - `capa_actions`
-- `capa_evidence`
 - `effectiveness_checks`
-- `capa_state_transitions`
 
-Metric definitions include numerator, denominator, time window, scope, and data source. Missing denominators remain unknown. A CAPA cannot close until its effectiveness criteria have been evaluated successfully.
+Metric definitions include numerator, denominator, time window, scope, and data source. Missing denominators remain unknown. Recovery snapshots are derived from versioned definitions and immutable measurements until a measured need for stored snapshots exists. A CAPA cannot close until its effectiveness criteria have been evaluated successfully. This phase brings the cumulative total to 57.
 
 ### Phase 9: Integrations and operational hardening
 
 - `integrations`
-- `integration_secret_references`
-- `integration_sync_cursors`
-- `webhook_endpoints`
-- `webhook_deliveries`
-- `ai_models`
-- `ai_analysis_runs`
-- `export_jobs`
-- `purge_jobs`
-- `restore_drills`
+- `integration_events`
+- `operational_jobs`
 
-This phase completes partitioning and index review using representative scale data. It validates hybrid retrieval, geographic scope, retention and anonymization, encrypted backups, point-in-time recovery, and restore drills.
+Integration events retain inbound and outbound delivery, webhook, and synchronization outcomes. Operational jobs use a constrained job type for AI analysis, exports, retention/purge work, and restore drills while keeping schema-versioned inputs and outputs. This phase completes representative-scale partitioning, index review, retention, anonymization, encrypted backup, point-in-time recovery, and restore validation. The mature design ceiling is 60 tables.
 
 ## Transaction and event flow
 
@@ -321,7 +264,7 @@ Time partitioning is enabled for `audit_events` initially and extended to `outbo
 
 - Encrypt backups and continuous WAL archives.
 - Retain enough WAL to provide point-in-time recovery with RPO no greater than 15 minutes.
-- Run scheduled restore drills and record them in `restore_drills` once Phase 9 exists.
+- Run scheduled restore drills and record them as `operational_jobs` with the `restore_drill` job type once Phase 9 exists.
 - Demonstrate RTO no greater than two hours with checksum, migration-version, RLS, and representative business-query validation.
 - Never edit a migration that has run in a shared environment.
 - Stop rollout when a migration or backfill fails; do not mark partial work complete.

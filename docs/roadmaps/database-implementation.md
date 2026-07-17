@@ -5,234 +5,183 @@ SPDX-License-Identifier: Apache-2.0
 
 # TraceGuard Database Implementation Roadmap
 
-> For agentic workers: follow `.agents/skills/traceguard-database/SKILL.md` and write a focused implementation plan for the selected phase before changing schema or migrations.
+> For agentic workers: follow `.agents/skills/build-open-source-repository/SKILL.md`, the accepted database RFC, and the focused plan for the selected phase before changing schema or migrations.
 
 ## Purpose
 
-This roadmap turns [RFC 0001](../rfcs/0001-database-architecture.md) into ten independently verifiable delivery phases. The RFC is the architectural authority; this document defines order, outputs, and completion gates. A phase-specific plan supplies exact test cases and file edits using the repository state that exists when work begins.
+This roadmap turns [RFC 0001](../rfcs/0001-database-architecture.md) into ten independently verifiable delivery phases. The mature design ceiling is 60 tables, not a quota. Tables are created only when the current phase has a use case, invariant, query, and test that require them.
 
 Database implementation occurs on `backend`. Each verified phase is merged with a merge commit into `develop`, where the full monorepo validation runs. Database-only work does not modify `frontend`, and this roadmap stops before `main`.
+
+## Schema growth
+
+| Milestone | Domain                                | Tables added | Cumulative |
+| --------- | ------------------------------------- | -----------: | ---------: |
+| Existing  | Organization baseline                 |            1 |          1 |
+| Phase 0   | Foundation                            |            4 |          5 |
+| Phase 1   | Identity and organization             |            4 |          9 |
+| Phase 2   | Product and supply network            |            9 |         18 |
+| Phase 3   | Evidence, claims, and relations       |            7 |         25 |
+| Phase 4   | Signals, incidents, and investigation |            9 |         34 |
+| Phase 5   | Trust state and recall planning       |            6 |         40 |
+| Phase 6   | Policy and approval                   |            5 |         45 |
+| Phase 7   | Recall execution and communication    |            7 |         52 |
+| Phase 8   | Recovery and CAPA                     |            5 |         57 |
+| Phase 9   | Integrations and hardening            |            3 |         60 |
+
+A new table outside this map requires all of the following:
+
+1. An independent lifecycle.
+2. A constraint or foreign key that cannot be protected safely in an existing table.
+3. A critical query that needs its own indexing boundary.
+4. A phase use case and database-backed test that consume it.
+
+JSONB is limited to schema-versioned snapshots, flexible metadata, and provider payloads. It never replaces tenant keys, required foreign keys, consequential state, authorization, money, or values that need database constraints.
 
 ## Delivery contract
 
 Every phase follows this loop:
 
 1. Start from the current `backend` branch after its preceding `develop` integration.
-2. Write and review a phase-specific plan before editing code.
-3. Add failing PostgreSQL integration tests for the phase invariants.
-4. Add focused schema modules and one or more new forward-only migrations.
-5. Prove clean installation and upgrade from the preceding phase.
-6. Validate RLS, privileges, constraints, concurrency, seeds, and critical query plans.
-7. Update package documentation and `[Unreleased]` in `CHANGELOG.md`.
-8. Commit atomically, review, then merge `backend` into `develop` with history preserved.
-9. Run the complete repository checks on `develop` and stop there.
+2. Review the phase table list against real use cases and remove any table that is not yet required.
+3. Write and review a focused phase plan before editing code.
+4. Add failing PostgreSQL integration tests for the phase invariants.
+5. Add focused schema modules and new forward-only migrations.
+6. Prove clean installation and upgrade from the preceding phase.
+7. Validate RLS, privileges, constraints, concurrency, seeds, and critical query plans.
+8. Update package documentation and `[Unreleased]` in `CHANGELOG.md`.
+9. Commit atomically, review, then merge `backend` into `develop` with history preserved.
+10. Run the complete repository checks on `develop` and stop there.
 
-No phase may edit a migration already shared through Git. Test databases must use an isolated Compose project and fresh volumes.
-
-## Shared implementation layout
-
-The implementation should converge on this structure as phases introduce domains:
-
-```text
-packages/database/
-├── migrations/
-├── src/
-│   ├── schema/
-│   │   ├── foundation/
-│   │   ├── identity/
-│   │   ├── supply/
-│   │   ├── evidence/
-│   │   ├── detection/
-│   │   ├── incidents/
-│   │   ├── trust/
-│   │   ├── recall/
-│   │   ├── governance/
-│   │   ├── execution/
-│   │   ├── recovery/
-│   │   ├── capa/
-│   │   └── platform/
-│   ├── client.ts
-│   ├── index.ts
-│   └── seed.ts
-└── tests/
-    ├── integration/
-    ├── migrations/
-    └── support/
-```
-
-Names may be refined by a phase plan, but domain ownership and root exports must remain clear. The existing organization-only migration is historical input, not a file to rewrite.
-
-## Dependency map
-
-| Phase | Capability                         | Depends on | Primary domains                    |
-| ----- | ---------------------------------- | ---------- | ---------------------------------- |
-| 0     | Database foundation                | Existing   | `foundation`, `platform`           |
-| 1     | Identity and organization          | 0          | `identity`                         |
-| 2     | Product and supply network         | 1          | `supply`                           |
-| 3     | Evidence, claims, and graph        | 1, 2       | `evidence`                         |
-| 4     | Signals, incidents, investigation  | 2, 3       | `detection`, `incidents`           |
-| 5     | Trust state and recall simulation  | 3, 4       | `trust`, `recall`                  |
-| 6     | Policy, approval, and recall plans | 1, 4, 5    | `governance`, `recall`             |
-| 7     | Recall execution and communication | 6          | `execution`                        |
-| 8     | Recovery and CAPA                  | 4, 7       | `recovery`, `capa`                 |
-| 9     | Integrations and hardening         | 0–8        | `platform` and cross-domain review |
+No phase may edit a migration already shared through Git. Test databases use isolated resources and never mount, reuse, or remove a developer's normal database volume.
 
 ## Phase 0: Database foundation
 
-### Deliverables
+**Tables:** `audit_events`, `outbox_events`, `idempotency_records`, and `retention_policies`.
 
-- Establish PostgreSQL 18 extensions, runtime and migration roles, transaction-local tenant context helpers, fail-closed RLS helpers, and append-only protection.
-- Add `audit_events`, `outbox_events`, `idempotency_records`, and `retention_policies`; partition `audit_events` by time.
-- Establish shared schema helpers for UUIDv7, timestamps, organization keys, optimistic versions, and common indexes.
-- Replace the stale `tenant_id` wording in package documentation with the RFC-approved `organization_id` contract.
-- Create reusable two-organization fixtures and isolated database-test utilities.
+**Deliverables:**
 
-### Completion gate
+- Establish PostgreSQL 18 extensions, least-privilege roles, transaction-local tenant context, fail-closed RLS helpers, and append-only protection.
+- Partition `audit_events` by time and use typed audit events for consequential state-transition history.
+- Establish shared UUIDv7, timestamp, organization-key, optimistic-version, and index helpers.
+- Create reusable two-organization fixtures and isolated integration-test utilities.
+- Replace stale `tenant_id` package wording with the RFC-approved `organization_id`.
 
-- Empty install and upgrade from migration `0000` both succeed.
-- Missing tenant context returns no tenant rows; mismatched composite keys fail.
-- Runtime roles cannot bypass RLS or mutate append-only rows.
-- Business state, audit, and outbox roll back together; concurrent outbox claims do not duplicate work.
-- Seed execution is repeatable, and representative tenant/time queries use intended indexes.
+**Gate:** empty install and upgrade from migration `0000`; no-context denial; role isolation; append-only audit; atomic state/audit/outbox rollback; disjoint outbox claims; repeatable seed; reviewed tenant/time query plans.
 
 ## Phase 1: Identity and organization
 
-### Deliverables
+**Tables:** `users`, `organization_memberships`, `roles`, and `role_assignments`; evolve existing `organizations`.
 
-- Add users, memberships, roles, permissions, role mappings, scope grants, authority grants, and membership transition history.
-- Evolve organizations compatibly without rewriting migration `0000`.
-- Store Keycloak subjects as identity references while keeping authorization and membership state in PostgreSQL.
-- Seed deterministic system permissions and roles without granting cross-organization access.
+**Deliverables:**
 
-### Completion gate
+- Store Keycloak subject references while PostgreSQL owns membership and business authorization.
+- Store validated permission codes on roles and constrained authority/resource scope on assignments.
+- Preserve revoked memberships and historical actor references.
 
-- Membership revocation removes access without deleting identity or historical actions.
-- Role, scope, and authority constraints reject invalid or cross-organization assignments.
-- Authorization fixtures cover two organizations and a user who legitimately belongs to both.
-- Transition history and audit records are append-only and transactional.
+**Gate:** revocation removes access without deletion; invalid and cross-organization assignments fail; multi-organization membership is isolated; authorization changes are audited transactionally.
 
 ## Phase 2: Product and supply network
 
-### Deliverables
+**Tables:** `products`, `batches`, `suppliers`, `facilities`, `components`, `product_components`, `batch_components`, `shipments`, and `shipment_items`.
 
-- Add products, variants, batches, serial ranges, suppliers, facilities, components, composition links, markets, jurisdictions, shipments, stops, items, and pseudonymous recipient references.
-- Model expected product composition separately from actual batch inputs.
-- Apply effective dating only to relationships whose historical truth must be reconstructed.
-- Add tenant-prefixed traceability indexes for product-to-batch and batch-to-shipment journeys.
+**Deliverables:**
 
-### Completion gate
+- Represent variants as product rows linked to a parent product.
+- Separate expected product composition from actual batch inputs.
+- Effective-date only relationships whose historical truth must be reconstructed.
+- Retain minimal market, route, and pseudonymous recipient snapshots for traceability.
 
-- Invalid ranges, overlapping relationships where prohibited, impossible quantities, and tenant-crossing links fail.
-- Historical composition and supplier relationships remain reconstructable.
-- Shipment exposure can be traced in both directions without storing unnecessary customer profiles.
-- Representative traceability queries have reviewed plans at fixture scale.
+**Gate:** invalid quantities/ranges and tenant-crossing links fail; composition history is reconstructable; exposure traces in both directions; critical traceability plans are reviewed.
 
-## Phase 3: Evidence, claims, and graph
+## Phase 3: Evidence, claims, and relations
 
-### Deliverables
+**Tables:** `evidence_sources`, `evidence`, `evidence_versions`, `claims`, `evidence_claim_links`, `chain_of_custody_events`, and `evidence_relations`.
 
-- Add evidence sources, evidence and versions, object metadata, claims, evidence links, custody events, legal holds, evidence relations, graph nodes, graph edges, and edge versions.
-- Keep binaries outside PostgreSQL while preserving object location, checksum, media metadata, and custody.
-- Preserve directed graph provenance and the source version that asserted each relationship.
-- Add hybrid relational and vector retrieval indexes justified by query plans.
+**Deliverables:**
 
-### Completion gate
+- Keep binaries outside PostgreSQL while retaining object version, checksum, classification, retention, and legal-hold state.
+- Make versions and custody events append-only.
+- Use directed `evidence_relations` as the initial Evidence Graph with provenance and effective time.
+- Add full-text and vector indexes only when query plans justify them.
 
-- Evidence versions, custody events, and graph-edge versions reject update and delete.
-- Duplicate checksums suggest deduplication but never silently replace records.
-- Legal holds override ordinary retention actions.
-- Claims and graph traversals cannot cross organizations and retain complete provenance.
+**Gate:** mutation rejection; legal-hold enforcement; checksum deduplication never replaces records silently; tenant-isolated claim and recursive relation traversal with complete provenance.
 
 ## Phase 4: Signals, incidents, and investigation
 
-### Deliverables
+**Tables:** `signals`, `signal_occurrences`, `assessments`, `incidents`, `incident_signals`, `incident_evidence`, `incident_scope_items`, `investigation_tasks`, and `decision_logs`.
 
-- Add signals, occurrences, assessments, deduplication links, signal evidence, incidents, explicit incident subject links, assessments, tasks, decision logs, and state transitions.
-- Model incident relationships with explicit tables rather than polymorphic foreign keys.
-- Encode valid incident transitions and optimistic concurrency behavior.
+**Deliverables:**
 
-### Completion gate
+- Use exactly-one-owner checks for signal/incident assessments.
+- Use typed nullable foreign keys and exactly-one-target checks for incident scope.
+- Encode valid incident transitions through current state plus typed immutable audit events.
+- Require an immutable decision log to close without recall.
 
-- Duplicate signal ingestion is idempotent while preserving source occurrences.
-- Invalid incident transitions and stale `row_version` updates fail.
-- Closing without recall requires a decision log referencing actor, reason, evidence, and assessment version.
-- Simultaneous assessment and transition tests demonstrate deterministic results and complete audit/outbox transactions.
+**Gate:** idempotent signal ingestion; invalid transitions and stale versions fail; cross-tenant scope fails; closing decisions retain actor, reason, evidence, and assessment version.
 
-## Phase 5: Trust state and recall simulation
+## Phase 5: Trust state and recall planning
 
-### Deliverables
+**Tables:** `scoring_methods`, `trust_snapshots`, `recall_options`, `recall_scope_items`, `simulation_runs`, and `recall_plans`.
 
-- Add scoring methods, immutable trust snapshots and dimensions, observations, change reasons, versioned recall options and scope links, simulation runs, inputs, and impact estimates.
-- Record method version, inputs, explanation, and uncertainty for every consequential score or estimate.
-- Keep recall options advisory and structurally unable to authorize execution.
+**Deliverables:**
 
-### Completion gate
+- Keep scores, methods, inputs, explanations, and uncertainty reproducible.
+- Store immutable option and plan version rows in their owning table.
+- Store simulation input/result snapshots with explicit schema versions.
+- Keep options structurally advisory and unable to authorize execution.
 
-- Trust and simulation outputs reject mutation.
-- Missing evidence, exposure, or denominators remains explicitly unknown rather than safe or zero.
-- Every result can be reproduced from retained method and input references.
-- Recall-scope queries for batches, markets, and recipients remain tenant-isolated and indexed.
+**Gate:** immutable results; unknown remains unknown; reproducibility from retained inputs; tenant-safe scope; unapproved options cannot become executable plans.
 
-## Phase 6: Policy, approval, and recall plans
+## Phase 6: Policy and approval
 
-### Deliverables
+**Tables:** `policies`, `approval_matrices`, `approval_requests`, `approval_decisions`, and `approval_invalidations`.
 
-- Add versioned policies and approval matrices, evaluations, approval requests, requirements, decisions, invalidations, strong-auth evidence, and versioned recall plans.
-- Bind each approval decision to exact option, policy, matrix, evidence, and actor-authentication versions.
-- Encode material-change invalidation and plan approval invariants.
+**Deliverables:**
 
-### Completion gate
+- Store immutable policy and matrix version rows.
+- Snapshot policy evaluation and requirements on the approval request.
+- Bind decisions to exact option, policy, matrix, evidence, actor, and strong-auth versions.
+- Append invalidations for material changes.
 
-- Approval decisions and invalidations are append-only.
-- Material scope, severity, evidence, or policy changes invalidate affected approval state.
-- Concurrent decisions cannot bypass quorum, separation-of-duties, authority, or strong-auth rules.
-- An approved plan version is immutable and no unapproved option can reach execution eligibility.
+**Gate:** immutable decisions; material-change invalidation; quorum, authority, strong-auth, and separation-of-duties concurrency tests; no invalid approval reaches execution.
 
 ## Phase 7: Recall execution and communication
 
-### Deliverables
+**Tables:** `recall_executions`, `action_tasks`, `action_attempts`, `affected_items`, `notification_templates`, `notifications`, and `delivery_attempts`.
 
-- Add executions, workflow references, action tasks and attempts, affected items and dispositions, exceptions, transition history, regulatory packages, versioned templates, notifications, recipients, delivery attempts, and acknowledgements.
-- Partition delivery attempts and add idempotency keys to all retryable side effects.
-- Keep Temporal identifiers as coordination references while PostgreSQL remains authoritative.
+**Deliverables:**
 
-### Completion gate
+- Keep PostgreSQL authoritative while retaining Temporal workflow/run references.
+- Apply idempotency keys to every retryable side effect.
+- Represent one recipient per notification and retain delivery plus acknowledgement state.
+- Keep template versions and approved plan references immutable.
 
-- A partial unique index permits at most one active execution for an approved plan version.
-- Execution transitions commit state, history, audit, and outbox together.
-- Replayed activities and provider callbacks do not duplicate external effects.
-- Notification content always references the approved plan and template versions used.
+**Gate:** at most one active execution per approved plan version; atomic execution state/audit/outbox; retry-safe activities and callbacks; exact approved content provenance.
 
 ## Phase 8: Recovery and CAPA
 
-### Deliverables
+**Tables:** `recovery_metric_definitions`, `recovery_measurements`, `capas`, `capa_actions`, and `effectiveness_checks`.
 
-- Add recovery metric definitions, measurements, snapshots, CAPAs, root causes, actions, evidence, effectiveness checks, and CAPA transitions.
-- Partition high-growth recovery measurements and retain calculation definitions with each snapshot.
-- Encode effectiveness prerequisites for CAPA closure.
+**Deliverables:**
 
-### Completion gate
+- Retain metric definition, source, scope, numerator, denominator, and time-window provenance.
+- Derive recovery snapshots until measured evidence requires storing them.
+- Require successful effectiveness evaluation before CAPA closure.
 
-- Undefined denominators remain unknown, and metric calculations retain source and time-window provenance.
-- CAPA closure fails until required actions and successful effectiveness checks exist.
-- Recovery and CAPA state histories are immutable and tenant-isolated.
-- Execution-to-recovery and incident-to-root-cause query paths have reviewed plans.
+**Gate:** unknown denominator handling; closure constraint; immutable measurements and checks; tenant-isolated execution-to-recovery and incident-to-root-cause queries.
 
 ## Phase 9: Integrations and operational hardening
 
-### Deliverables
+**Tables:** `integrations`, `integration_events`, and `operational_jobs`.
 
-- Add integrations, secret references, sync cursors, webhook endpoints and deliveries, AI model and analysis records, export jobs, purge jobs, and restore drills.
-- Keep secrets outside ordinary database fields and preserve only managed secret references.
-- Complete retention, anonymization, partition, and index review with representative scale data.
-- Document and automate encrypted backup, continuous WAL archiving, point-in-time recovery, and restore validation.
+**Deliverables:**
 
-### Completion gate
+- Retain managed secret references, sync/webhook outcomes, retries, and audit provenance.
+- Use constrained operational job types for AI analysis, export, retention/purge, and restore drills.
+- Complete representative-scale partition, index, retention, anonymization, backup, and recovery review.
 
-- Webhooks, syncs, analyses, exports, and purges are retry-safe and auditable.
-- AI output remains advisory, versioned, attributable, and incapable of approval or execution.
-- Retention and anonymization preserve legal holds and audit references.
-- A recorded restore drill proves RPO no greater than 15 minutes and RTO no greater than two hours, including migration, checksum, RLS, and representative business-query checks.
+**Gate:** retry-safe integration/jobs; advisory and attributable AI results; legal-hold-safe retention; recorded restore evidence meeting RPO no greater than 15 minutes and RTO no greater than two hours.
 
 ## Required verification for every phase
 
@@ -250,7 +199,7 @@ just security
 docker compose config --quiet
 ```
 
-The phase-specific plan must add exact migration commands, fixture setup, test filters, expected failure messages, and query-plan assertions. Record commands and results in the handoff or pull request; passing mock tests alone does not complete a phase.
+The focused phase plan adds exact migration commands, fixture setup, test filters, expected failure messages, and query-plan assertions. Passing mock tests alone does not complete a phase.
 
 ## Progress record
 
