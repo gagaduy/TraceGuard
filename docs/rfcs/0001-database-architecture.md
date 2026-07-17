@@ -5,6 +5,14 @@ SPDX-License-Identifier: Apache-2.0
 
 # TraceGuard Database Design
 
+| Field          | Value                   |
+| -------------- | ----------------------- |
+| Status         | Accepted                |
+| Created        | 2026-07-17              |
+| Implementation | `backend`               |
+| Integration    | `develop`               |
+| Release        | Explicitly out of scope |
+
 ## Status and scope
 
 This specification defines the complete target database architecture for TraceGuard and divides delivery into independently deployable phases. It covers PostgreSQL schema, migrations, tenant isolation, constraints, indexing, retention, auditability, backup, restore, and database integration tests.
