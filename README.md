@@ -73,7 +73,16 @@ just install
 just check
 ```
 
-The command surface is intentionally stable; use `just --list` rather than memorizing package-manager commands. Local service commands become available with the shared Compose foundation on `develop`.
+Start the shared infrastructure and optional development tools:
+
+```bash
+just infra-up
+just tools-up
+just observe-up
+just ps
+```
+
+The command surface is intentionally stable; use `just --list` rather than memorizing package-manager or Compose commands. See the [local development guide](docs/operations/local-development.md) for service URLs, data persistence, and troubleshooting.
 
 ## Contributing
 

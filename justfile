@@ -19,6 +19,30 @@ install:
 
 bootstrap: doctor env install
 
+infra-up:
+    docker compose --profile core up -d
+
+up:
+    docker compose --profile core --profile app up -d --build
+
+tools-up:
+    docker compose --profile core --profile tools up -d
+
+observe-up:
+    docker compose --profile observability up -d
+
+down:
+    docker compose down
+
+ps:
+    docker compose ps
+
+logs service="":
+    docker compose logs --follow {{service}}
+
+dev:
+    docker compose --profile core --profile app up --build
+
 build:
     pnpm run build
 
