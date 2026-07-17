@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# JavaScript and TypeScript dependencies and outputs
+node_modules/
+.pnpm-store/
+.turbo/
+.next/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Python environments, caches, and outputs
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.coverage
+htmlcov/
+
+# Test and runtime artifacts
+playwright-report/
+test-results/
+*.log
+*.pid
+
+# Local editor state
+.idea/
+.vscode/

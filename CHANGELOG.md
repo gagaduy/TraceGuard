@@ -1,0 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2026 TraceGuard contributors
+SPDX-License-Identifier: Apache-2.0
+-->
+
+# Changelog
+
+All notable changes to TraceGuard are documented in this file.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- Establish the public project identity, architecture overview, contribution guidance, security process, governance model, support routes, and GitHub collaboration templates.
+- Declare Apache-2.0 licensing and file-level SPDX conventions for project-owned files.
+
+[Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main

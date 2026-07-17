@@ -1,0 +1,69 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: Bug report
+description: Report reproducible behavior that differs from the documented contract
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, personal data, production evidence, or vulnerability details. Use private vulnerability reporting for security issues.
+  - type: input
+    id: version
+    attributes:
+      label: Branch and commit
+      description: Provide the branch name and full commit SHA.
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Web
+        - API
+        - Workflows
+        - AI service
+        - Database
+        - Infrastructure
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: List deterministic steps using sanitized data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Include redacted logs or error details when useful.
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Trust and safety impact
+      description: Note tenant, authorization, evidence, approval, audit, privacy, or retry impact.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I searched for an existing report.
+          required: true
+        - label: I removed secrets, personal data, and production evidence.
+          required: true
+        - label: This report does not disclose a vulnerability publicly.
+          required: true

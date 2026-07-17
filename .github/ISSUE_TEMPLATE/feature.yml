@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: Feature request
+description: Propose a concrete product or contributor outcome
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Who needs this and what decision or action should it enable?
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current limitation
+      description: Explain the current workflow and why it is insufficient.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance evidence
+      description: State observable conditions that would prove the outcome is achieved.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Boundaries and risks
+      description: Note tenant, authorization, evidence, approval, audit, privacy, AI, integration, or migration concerns.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I searched for an existing request or decision record.
+          required: true
+        - label: This request does not require AI to approve or execute a recall.
+          required: true
