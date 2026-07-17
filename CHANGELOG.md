@@ -23,9 +23,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Add a typed frontend API client generated from the shared OpenAPI contract, with a deterministic drift check and transport test.
 - Add the accessible shared UI foundation and a responsive Next.js application shell that explains TraceGuard's product loop, trust boundaries, and pre-release status.
 - Add a pinned, multi-stage, non-root web container and frontend-only Compose application profile.
+- Add the Express platform API, PostgreSQL adapter, health/readiness contract implementation, structured request context, graceful shutdown, and API tests.
+- Add the Temporal TypeScript worker process, validated runtime configuration, and deterministic platform probe workflow.
+- Add the private FastAPI compute-service boundary with versioned health schemas, safe readiness failure, locked Python dependencies, and tests.
+- Containerize the API, Temporal worker, and private AI service as non-root application services.
 
 ### Fixed
 
 - Ensure `just down` stops services from every supported Compose profile without deleting named volumes.
+- Normalize trailing blank lines in backend container metadata.
 
 [Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main

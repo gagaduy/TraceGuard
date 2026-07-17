@@ -40,11 +40,27 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      - name: Install Python
+        if: ${{ hashFiles('apps/ai-service/pyproject.toml') != '' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        if: ${{ hashFiles('apps/ai-service/pyproject.toml') != '' }}
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.29"
+
       - name: Install just
         uses: extractions/setup-just@v3
 
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install locked Python dependencies
+        if: ${{ hashFiles('apps/ai-service/pyproject.toml') != '' }}
+        run: uv sync --project apps/ai-service --frozen
 
       - name: Install frontend browser
         if: ${{ hashFiles('apps/web/package.json') != '' }}

@@ -6,6 +6,9 @@ packages:
   - packages/*
 allowBuilds:
   "@swc/core": true
+  esbuild: true
+  protobufjs: true
   sharp: true
 overrides:
+  "@esbuild-kit/core-utils>esbuild": 0.25.0
   postcss: 8.5.19

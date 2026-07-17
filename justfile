@@ -44,7 +44,7 @@ dev:
     docker compose --profile core --profile app up --build
 
 docker-build:
-    docker compose build web
+    docker compose --profile app build web api workflows ai-service
 
 build:
     pnpm run build
@@ -83,6 +83,15 @@ security:
 
 openapi:
     pnpm run openapi:lint
+
+db-generate:
+    pnpm --filter @traceguard/database db:generate
+
+db-migrate:
+    pnpm --filter @traceguard/database db:migrate
+
+db-seed:
+    pnpm --filter @traceguard/database db:seed
 
 check: format-check lint typecheck test build openapi
 

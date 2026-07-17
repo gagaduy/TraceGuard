@@ -1,7 +1,4 @@
 # SPDX-FileCopyrightText: 2026 TraceGuard contributors
 # SPDX-License-Identifier: Apache-2.0
 
-**/generated/**
-**/migrations/meta/**
-pnpm-lock.yaml
-**/.env.example
+"""TraceGuard private compute service."""
