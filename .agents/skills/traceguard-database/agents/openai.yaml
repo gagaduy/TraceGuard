@@ -1,7 +1,0 @@
-# SPDX-FileCopyrightText: 2026 TraceGuard contributors
-# SPDX-License-Identifier: Apache-2.0
-
-interface:
-  display_name: "TraceGuard Database"
-  short_description: "Build TraceGuard database phases safely"
-  default_prompt: "Use $traceguard-database to implement the next approved database phase safely."

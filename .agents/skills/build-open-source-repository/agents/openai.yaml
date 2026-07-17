@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+interface:
+  display_name: "Build Open-Source Repository"
+  short_description: "Build GitHub repos with disciplined branches and commits"
+  default_prompt: "Use $build-open-source-repository to build this repository with task-scoped branches, atomic commits, changelog updates, licensing, and community standards."
+
+policy:
+  allow_implicit_invocation: true
