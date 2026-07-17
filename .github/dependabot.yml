@@ -16,7 +16,11 @@ updates:
       prefix: build(deps)
 
   - package-ecosystem: docker
-    directory: /
+    directories:
+      - /apps/ai-service
+      - /apps/api
+      - /apps/workflows
+      - /infrastructure/docker
     schedule:
       interval: weekly
       day: monday
