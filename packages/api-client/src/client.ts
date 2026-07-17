@@ -3,7 +3,7 @@
 
 import createClient from "openapi-fetch";
 
-import type { paths } from "./generated/schema.js";
+import type { paths } from "./generated/schema";
 
 export interface TraceGuardClientOptions {
   baseUrl: string;

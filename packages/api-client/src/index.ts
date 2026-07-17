@@ -5,5 +5,5 @@ export {
   createTraceGuardClient,
   type TraceGuardClient,
   type TraceGuardClientOptions,
-} from "./client.js";
-export type { components, operations, paths } from "./generated/schema.js";
+} from "./client";
+export type { components, operations, paths } from "./generated/schema";

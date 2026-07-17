@@ -1,0 +1,37 @@
+/* SPDX-FileCopyrightText: 2026 TraceGuard contributors */
+/* SPDX-License-Identifier: Apache-2.0 */
+
+@import "tailwindcss";
+@source "../../../packages/ui/src";
+
+:root {
+  color-scheme: dark;
+  --background: #071016;
+  --foreground: #eef8f7;
+  --muted: #96aaa9;
+  --line: rgb(255 255 255 / 10%);
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgb(23 89 89 / 32%), transparent 30rem),
+    radial-gradient(circle at 85% 30%, rgb(45 72 104 / 24%), transparent 34rem),
+    var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #67e8f9;
+  color: #071016;
+}

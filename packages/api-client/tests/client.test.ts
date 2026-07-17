@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import { createTraceGuardClient } from "../src/index.js";
+import { createTraceGuardClient } from "../src";
 
 describe("createTraceGuardClient", () => {
   it("calls the typed liveness endpoint against the configured API", async () => {

@@ -20,5 +20,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Add GitHub Actions validation and scoped Dependabot updates for workspace dependencies, Compose images, and workflow actions.
 - Define the shared OpenAPI 3.1 contract for liveness, readiness, and RFC 9457 Problem Details responses.
 - Add a typed frontend API client generated from the shared OpenAPI contract, with a deterministic drift check and transport test.
+- Add the accessible shared UI foundation and a responsive Next.js application shell that explains TraceGuard's product loop, trust boundaries, and pre-release status.
 
 [Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main

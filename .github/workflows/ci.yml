@@ -46,8 +46,16 @@ jobs:
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install frontend browser
+        if: ${{ hashFiles('apps/web/package.json') != '' }}
+        run: pnpm --filter @traceguard/web exec playwright install --with-deps chromium
+
       - name: Validate source and build
         run: just check
+
+      - name: Validate frontend journey
+        if: ${{ hashFiles('apps/web/package.json') != '' }}
+        run: just test-e2e
 
       - name: Validate repository licensing
         run: just license-audit
