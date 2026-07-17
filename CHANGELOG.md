@@ -22,6 +22,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Use TypeScript 5.9 as the supported compiler line for compatibility with the current OpenAPI and lint toolchain.
 - Add the Express platform API, PostgreSQL adapter, health/readiness contract implementation, structured request context, graceful shutdown, and API tests.
 - Add the Temporal TypeScript worker process, validated runtime configuration, and deterministic platform probe workflow.
+- Add the private FastAPI compute-service boundary with versioned health schemas, safe readiness failure, locked Python dependencies, and tests.
 
 ### Fixed
 
