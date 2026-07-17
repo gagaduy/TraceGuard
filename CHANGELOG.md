@@ -32,5 +32,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Ensure `just down` stops services from every supported Compose profile without deleting named volumes.
 - Normalize trailing blank lines in backend container metadata.
+- Point Docker dependency updates at the directories that contain Dockerfiles.
 
 [Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main
