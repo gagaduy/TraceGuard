@@ -81,6 +81,15 @@ security:
 openapi:
     pnpm run openapi:lint
 
+db-generate:
+    pnpm --filter @traceguard/database db:generate
+
+db-migrate:
+    pnpm --filter @traceguard/database db:migrate
+
+db-seed:
+    pnpm --filter @traceguard/database db:seed
+
 check: format-check lint typecheck test build openapi
 
 ci: check test-integration test-e2e license-audit security

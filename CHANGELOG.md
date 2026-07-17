@@ -20,6 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Add GitHub Actions validation and scoped Dependabot updates for workspace dependencies, Compose images, and workflow actions.
 - Define the shared OpenAPI 3.1 contract for liveness, readiness, and RFC 9457 Problem Details responses.
 - Use TypeScript 5.9 as the supported compiler line for compatibility with the current OpenAPI and lint toolchain.
+- Add the Express platform API, PostgreSQL adapter, health/readiness contract implementation, structured request context, graceful shutdown, and API tests.
 
 ### Fixed
 
