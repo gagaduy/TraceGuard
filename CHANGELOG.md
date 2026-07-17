@@ -11,6 +11,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+- Document the approved phased architecture for the complete TraceGuard database.
+
 ### Added
 
 - Establish the public project identity, architecture overview, contribution guidance, security process, governance model, support routes, and GitHub collaboration templates.
