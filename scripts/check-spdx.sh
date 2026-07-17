@@ -8,7 +8,7 @@ failed=0
 
 while IFS= read -r path; do
   case "${path}" in
-    LICENSE|pnpm-lock.yaml|*.json|*.lock|*.cff)
+    LICENSE|pnpm-lock.yaml|*.json|*.lock|*.cff|*/generated/*|*/next-env.d.ts)
       continue
       ;;
     *.md|*.ts|*.tsx|*.js|*.mjs|*.cjs|*.py|*.sh|*.css|*.html|*.sql|*.toml|*.yaml|*.yml|.editorconfig|.env.example|.gitignore|justfile|Dockerfile*)

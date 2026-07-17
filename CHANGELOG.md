@@ -20,6 +20,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Add GitHub Actions validation and scoped Dependabot updates for workspace dependencies, Compose images, and workflow actions.
 - Define the shared OpenAPI 3.1 contract for liveness, readiness, and RFC 9457 Problem Details responses.
 - Use TypeScript 5.9 as the supported compiler line for compatibility with the current OpenAPI and lint toolchain.
+- Add a typed frontend API client generated from the shared OpenAPI contract, with a deterministic drift check and transport test.
+- Add the accessible shared UI foundation and a responsive Next.js application shell that explains TraceGuard's product loop, trust boundaries, and pre-release status.
+- Add a pinned, multi-stage, non-root web container and frontend-only Compose application profile.
 
 ### Fixed
 

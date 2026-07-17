@@ -43,6 +43,9 @@ logs service="":
 dev:
     docker compose --profile core --profile app up --build
 
+docker-build:
+    docker compose build web
+
 build:
     pnpm run build
 
