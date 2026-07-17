@@ -32,7 +32,7 @@ observe-up:
     docker compose --profile observability up -d
 
 down:
-    docker compose down
+    docker compose --profile core --profile tools --profile observability --profile app down
 
 ps:
     docker compose ps
