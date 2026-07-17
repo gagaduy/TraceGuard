@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+apis:
+  traceguard@v1:
+    root: openapi/traceguard.openapi.yaml
+
+extends:
+  - recommended
+
+rules:
+  no-ambiguous-paths: error
+  operation-operationId: error
+  operation-summary: error
+  security-defined: off

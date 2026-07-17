@@ -1,0 +1,85 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: Continuous integration
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+      - frontend
+      - backend
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.13.1
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install Python
+        if: ${{ hashFiles('apps/ai-service/pyproject.toml') != '' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        if: ${{ hashFiles('apps/ai-service/pyproject.toml') != '' }}
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.29"
+
+      - name: Install just
+        uses: extractions/setup-just@v3
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install locked Python dependencies
+        if: ${{ hashFiles('apps/ai-service/pyproject.toml') != '' }}
+        run: uv sync --project apps/ai-service --frozen
+
+      - name: Install frontend browser
+        if: ${{ hashFiles('apps/web/package.json') != '' }}
+        run: pnpm --filter @traceguard/web exec playwright install --with-deps chromium
+
+      - name: Validate source and build
+        run: just check
+
+      - name: Validate frontend journey
+        if: ${{ hashFiles('apps/web/package.json') != '' }}
+        run: just test-e2e
+
+      - name: Validate repository licensing
+        run: just license-audit
+
+      - name: Audit JavaScript dependencies
+        run: pnpm audit --audit-level high
+
+      - name: Validate Compose model
+        run: |
+          just env
+          docker compose --profile core --profile tools --profile observability config --quiet

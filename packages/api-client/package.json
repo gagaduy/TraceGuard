@@ -1,0 +1,33 @@
+{
+  "name": "@traceguard/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Generated typed client for the TraceGuard HTTP API",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "generate": "openapi-typescript ../../openapi/traceguard.openapi.yaml -o src/generated/schema.d.ts",
+    "generate:check": "openapi-typescript ../../openapi/traceguard.openapi.yaml | diff - src/generated/schema.d.ts",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}

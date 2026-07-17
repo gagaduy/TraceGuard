@@ -1,0 +1,37 @@
+{
+  "name": "traceguard",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Evidence-backed TrustOps and recall-resilience operating system",
+  "license": "Apache-2.0",
+  "author": "TraceGuard contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gagaduy/TraceGuard.git"
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=11.13 <12"
+  },
+  "packageManager": "pnpm@11.13.1",
+  "scripts": {
+    "build": "turbo run build",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown",
+    "lint": "eslint .",
+    "openapi:lint": "redocly lint traceguard@v1",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "test:integration": "turbo run test:integration",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@redocly/cli": "2.39.0",
+    "eslint": "10.7.0",
+    "prettier": "3.9.5",
+    "turbo": "2.10.5",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.64.0"
+  }
+}

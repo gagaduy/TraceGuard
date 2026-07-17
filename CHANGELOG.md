@@ -15,5 +15,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Establish the public project identity, architecture overview, contribution guidance, security process, governance model, support routes, and GitHub collaboration templates.
 - Declare Apache-2.0 licensing and file-level SPDX conventions for project-owned files.
+- Add the pnpm and Turborepo workspace foundation, shared TypeScript quality configuration, stable `just` command interface, and local toolchain diagnostics.
+- Add a profile-based Docker Compose environment for PostgreSQL, Valkey, object storage, Temporal, Keycloak, local mail, and the observability stack.
+- Add GitHub Actions validation and scoped Dependabot updates for workspace dependencies, Compose images, and workflow actions.
+- Define the shared OpenAPI 3.1 contract for liveness, readiness, and RFC 9457 Problem Details responses.
+- Use TypeScript 5.9 as the supported compiler line for compatibility with the current OpenAPI and lint toolchain.
+- Add a typed frontend API client generated from the shared OpenAPI contract, with a deterministic drift check and transport test.
+- Add the accessible shared UI foundation and a responsive Next.js application shell that explains TraceGuard's product loop, trust boundaries, and pre-release status.
+- Add a pinned, multi-stage, non-root web container and frontend-only Compose application profile.
+- Add the Express platform API, PostgreSQL adapter, health/readiness contract implementation, structured request context, graceful shutdown, and API tests.
+- Add the Temporal TypeScript worker process, validated runtime configuration, and deterministic platform probe workflow.
+- Add the private FastAPI compute-service boundary with versioned health schemas, safe readiness failure, locked Python dependencies, and tests.
+- Containerize the API, Temporal worker, and private AI service as non-root application services.
+
+### Fixed
+
+- Ensure `just down` stops services from every supported Compose profile without deleting named volumes.
+- Normalize trailing blank lines in backend container metadata.
 
 [Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main
