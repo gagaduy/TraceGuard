@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+.git
+.github
+.turbo
+**/.next
+**/.venv
+**/coverage
+**/dist
+**/node_modules
+.env
+*.log
+

@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint .",
-    "start": "node dist/server.js",
+    "start": "node dist/apps/api/src/server.js",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

@@ -11,6 +11,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+- Containerize the API, Temporal worker, and private AI service as non-root application services.
+
 ### Added
 
 - Establish the public project identity, architecture overview, contribution guidance, security process, governance model, support routes, and GitHub collaboration templates.

@@ -46,6 +46,9 @@ dev:
 build:
     pnpm run build
 
+docker-build:
+    docker compose --profile app build api workflows ai-service
+
 format:
     pnpm run format
     @if test -f apps/ai-service/pyproject.toml; then cd apps/ai-service && uv run ruff format .; fi
