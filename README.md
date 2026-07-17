@@ -47,18 +47,33 @@ See the [system architecture overview](docs/architecture/system-overview.md) for
 
 ## Branch model
 
-| Branch | Purpose |
-| --- | --- |
-| `main` | Stable open-source baseline and accepted repository documentation |
-| `develop` | Shared integration base, monorepo tooling, and local infrastructure |
-| `frontend` | Web application, shared UI, and generated API client work |
-| `backend` | API, workflow, database, observability, testing, and AI-service work |
+| Branch     | Purpose                                                              |
+| ---------- | -------------------------------------------------------------------- |
+| `main`     | Stable open-source baseline and accepted repository documentation    |
+| `develop`  | Shared integration base, monorepo tooling, and local infrastructure  |
+| `frontend` | Web application, shared UI, and generated API client work            |
+| `backend`  | API, workflow, database, observability, testing, and AI-service work |
 
 Feature branches are reviewed into their intended base. The long-lived `frontend` and `backend` branches remain scoped to their system boundary until an explicit integration step is approved.
 
-## Repository status
+## Development prerequisites
 
-The initial branch contains governance and architecture documentation. Runnable development commands are introduced on `develop` together with the monorepo foundation. No command is documented here as available before it exists on the branch being viewed.
+- Node.js 24 LTS
+- pnpm 11.13
+- Python 3.13 and `uv`
+- Docker Engine with Docker Compose
+- `just`
+
+Run the diagnostics before installing dependencies:
+
+```bash
+just doctor
+just env
+just install
+just check
+```
+
+The command surface is intentionally stable; use `just --list` rather than memorizing package-manager commands. Local service commands become available with the shared Compose foundation on `develop`.
 
 ## Contributing
 

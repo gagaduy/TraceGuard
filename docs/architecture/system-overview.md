@@ -43,14 +43,14 @@ The system begins as a modular monolith with two specialized process types: a Te
 
 ## Approved technology
 
-| Area | Technology |
-| --- | --- |
-| Repository | pnpm workspaces and Turborepo |
-| Web | Next.js, TypeScript, Tailwind CSS, shadcn/ui |
-| API | Express, TypeScript, REST, OpenAPI 3.1 |
-| Data | PostgreSQL, Drizzle, pgvector, PostGIS |
-| Workflow | Temporal TypeScript SDK |
-| Compute | Python, FastAPI, Pydantic, uv |
-| Identity | Keycloak through OIDC/OAuth 2.0 |
-| Local environment | Docker Compose and `just` |
-| Telemetry | OpenTelemetry, Prometheus, Grafana, Loki |
+| Area              | Technology                                   |
+| ----------------- | -------------------------------------------- |
+| Repository        | pnpm workspaces and Turborepo                |
+| Web               | Next.js, TypeScript, Tailwind CSS, shadcn/ui |
+| API               | Express, TypeScript, REST, OpenAPI 3.1       |
+| Data              | PostgreSQL, Drizzle, pgvector, PostGIS       |
+| Workflow          | Temporal TypeScript SDK                      |
+| Compute           | Python, FastAPI, Pydantic, uv                |
+| Identity          | Keycloak through OIDC/OAuth 2.0              |
+| Local environment | Docker Compose and `just`                    |
+| Telemetry         | OpenTelemetry, Prometheus, Grafana, Loki     |
