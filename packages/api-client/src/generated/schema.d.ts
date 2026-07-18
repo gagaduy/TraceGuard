@@ -38,10 +38,117 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the authenticated identity and authorized organizations */
+        get: operations["getCurrentIdentity"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create the authenticated identity's first organization */
+        post: operations["bootstrapOrganization"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/organizations/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Immutable human-readable organization route key. */
+                slug: components["parameters"]["OrganizationSlug"];
+            };
+            cookie?: never;
+        };
+        /** Get an authorized organization context */
+        get: operations["getOrganization"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update authorized organization settings */
+        patch: operations["updateOrganization"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {string} */
+        MembershipRole: "admin" | "quality_analyst" | "recall_coordinator" | "approver";
+        /** @example acme-foods */
+        OrganizationSlug: string;
+        /**
+         * @description IANA time-zone identifier used for organization-local display and scheduling.
+         * @example Asia/Ho_Chi_Minh
+         */
+        TimeZone: string;
+        OrganizationSummary: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: components["schemas"]["OrganizationSlug"];
+            timeZone: components["schemas"]["TimeZone"];
+            rowVersion: number;
+            roles: components["schemas"]["MembershipRole"][];
+        };
+        OrganizationDetail: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            slug: components["schemas"]["OrganizationSlug"];
+            timeZone: components["schemas"]["TimeZone"];
+            rowVersion: number;
+            roles: components["schemas"]["MembershipRole"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        CurrentIdentity: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uri */
+            issuer: string;
+            subject: string;
+            /** Format: email */
+            email?: string;
+            displayName?: string;
+            organizations: components["schemas"]["OrganizationSummary"][];
+        };
+        BootstrapOrganizationRequest: {
+            name: string;
+            slug: components["schemas"]["OrganizationSlug"];
+            timeZone: components["schemas"]["TimeZone"];
+        };
+        UpdateOrganizationRequest: {
+            name: string;
+            timeZone: components["schemas"]["TimeZone"];
+            rowVersion: number;
+        };
         HealthResponse: {
             /** @enum {string} */
             status: "ok";
@@ -63,8 +170,50 @@ export interface components {
             [key: string]: unknown;
         };
     };
-    responses: never;
-    parameters: never;
+    responses: {
+        /** @description Authentication is missing, invalid, or expired. */
+        AuthenticationRequired: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["ProblemDetails"];
+            };
+        };
+        /** @description The organization does not exist or is not accessible to the current identity. */
+        OrganizationNotFound: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["ProblemDetails"];
+            };
+        };
+        /** @description The current identity belongs to the organization but lacks authority for this action. */
+        OrganizationAccessDenied: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["ProblemDetails"];
+            };
+        };
+        /** @description The request did not satisfy the organization-access contract. */
+        ValidationProblem: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/problem+json": components["schemas"]["ProblemDetails"];
+            };
+        };
+    };
+    parameters: {
+        /** @description Stable key for one organization-bootstrap intent. Reusing it with different input is rejected. */
+        IdempotencyKey: string;
+        /** @description Immutable human-readable organization route key. */
+        OrganizationSlug: components["schemas"]["OrganizationSlug"];
+    };
     requestBodies: never;
     headers: never;
     pathItems: never;
@@ -136,6 +285,130 @@ export interface operations {
                     "application/problem+json": components["schemas"]["ProblemDetails"];
                 };
             };
+        };
+    };
+    getCurrentIdentity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The current identity and every organization it may access. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CurrentIdentity"];
+                };
+            };
+            401: components["responses"]["AuthenticationRequired"];
+        };
+    };
+    bootstrapOrganization: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Stable key for one organization-bootstrap intent. Reusing it with different input is rejected. */
+                "Idempotency-Key": components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BootstrapOrganizationRequest"];
+            };
+        };
+        responses: {
+            /** @description The organization was created, or the same idempotent result was replayed. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationRequired"];
+            /** @description The slug is unavailable, the identity already belongs to an organization, or the idempotency key was reused for different input. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            422: components["responses"]["ValidationProblem"];
+        };
+    };
+    getOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Immutable human-readable organization route key. */
+                slug: components["parameters"]["OrganizationSlug"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The organization context and the current identity's roles. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationRequired"];
+            404: components["responses"]["OrganizationNotFound"];
+        };
+    };
+    updateOrganization: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Immutable human-readable organization route key. */
+                slug: components["parameters"]["OrganizationSlug"];
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrganizationRequest"];
+            };
+        };
+        responses: {
+            /** @description The successor organization version. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationDetail"];
+                };
+            };
+            401: components["responses"]["AuthenticationRequired"];
+            403: components["responses"]["OrganizationAccessDenied"];
+            404: components["responses"]["OrganizationNotFound"];
+            /** @description The supplied row version is stale. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetails"];
+                };
+            };
+            422: components["responses"]["ValidationProblem"];
         };
     };
 }

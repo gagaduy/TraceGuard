@@ -1,9 +1,13 @@
 // SPDX-FileCopyrightText: 2026 TraceGuard contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
-import { createTraceGuardClient } from "../src";
+import { createTraceGuardClient, type components } from "../src";
+
+type MeResponse = components["schemas"]["CurrentIdentity"];
+type BootstrapRequest = components["schemas"]["BootstrapOrganizationRequest"];
+type UpdateRequest = components["schemas"]["UpdateOrganizationRequest"];
 
 describe("createTraceGuardClient", () => {
   it("calls the typed liveness endpoint against the configured API", async () => {
@@ -32,5 +36,22 @@ describe("createTraceGuardClient", () => {
       method: "GET",
       url: "https://traceguard.test/health/live",
     });
+  });
+
+  it("exposes the organization access contract", () => {
+    const bootstrap: BootstrapRequest = {
+      name: "Acme Foods",
+      slug: "acme-foods",
+      timeZone: "Asia/Ho_Chi_Minh",
+    };
+    const update: UpdateRequest = {
+      name: "Acme Foods Vietnam",
+      rowVersion: 1,
+      timeZone: "Asia/Ho_Chi_Minh",
+    };
+
+    expectTypeOf<MeResponse>().toHaveProperty("organizations");
+    expect(bootstrap.slug).toBe("acme-foods");
+    expect(update.rowVersion).toBe(1);
   });
 });
