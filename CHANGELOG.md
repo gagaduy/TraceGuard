@@ -15,6 +15,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Add a reusable production-frontend skill with screen specifications, local visual verification, and monorepo-aware structural auditing.
 - Add explicit frontend deliverables to every feature-first roadmap task.
 - Add the end-to-end master implementation checklist for feature-first MVP and production delivery.
 - Define the feature-first delivery roadmap, complete MVP boundary, and per-capability integration gates.

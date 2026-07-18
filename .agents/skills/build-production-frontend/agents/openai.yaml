@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2026 TraceGuard contributors
+# SPDX-License-Identifier: Apache-2.0
+
+interface:
+  display_name: Build Production Frontend
+  short_description: Build resilient frontend interfaces from specifications
+  default_prompt:
+    Use $build-production-frontend to implement this frontend from the
+    product and design specifications with complete states, responsive behavior, accessibility,
+    visual verification, and tests.
+policy:
+  products:
+    - chatgpt
+    - codex
+    - api
+    - atlas
+  allow_implicit_invocation: true
