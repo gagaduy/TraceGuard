@@ -73,13 +73,20 @@ just install
 just check
 ```
 
-Start the shared infrastructure and optional development tools:
+Start the complete local application. Database migrations finish before the
+API is allowed to start:
 
 ```bash
-just infra-up
+just up
+just ps
+```
+
+Use `just dev` for foreground logs. Optional development tools remain
+separate:
+
+```bash
 just tools-up
 just observe-up
-just ps
 ```
 
 The command surface is intentionally stable; use `just --list` rather than memorizing package-manager or Compose commands. See the [local development guide](docs/operations/local-development.md) for service URLs, data persistence, and troubleshooting.

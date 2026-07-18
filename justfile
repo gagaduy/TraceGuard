@@ -44,7 +44,7 @@ dev:
     docker compose --profile core --profile app up --build
 
 docker-build:
-    docker compose --profile app build web api workflows ai-service
+    docker compose --profile app build web api migrate workflows ai-service
 
 build:
     pnpm run build
@@ -88,7 +88,10 @@ db-generate:
     pnpm --filter @traceguard/database db:generate
 
 db-migrate:
-    pnpm --filter @traceguard/database db:migrate
+    docker compose --profile core --profile app run --rm --build migrate
+
+db-shell:
+    docker compose exec postgres psql --username traceguard --dbname traceguard
 
 db-seed:
     pnpm --filter @traceguard/database db:seed

@@ -13,6 +13,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Add a portable open-source repository skill and root agent guide for handoff.
 
+### Changed
+
+- Make `just up` and `just dev` apply database migrations automatically, and document direct local PostgreSQL inspection on port 5433.
+
 ### Added
 
 - Add a host-accessible development PostgreSQL service and an idempotent migration container that must complete before the API starts.
