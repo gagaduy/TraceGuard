@@ -15,6 +15,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Implement the first organization-access capability with OIDC authentication, atomic tenant bootstrap, role-scoped organization administration, and append-only audit evidence.
+- Add an importable local Keycloak realm and isolated PostgreSQL migrations for identity, membership, idempotency, and organization access.
+- Add the authenticated web journey from sign-in and organization onboarding through responsive overview and version-safe organization settings.
+- Define the authenticated organization-access API contract and generated browser types.
+- Define the organization-access design and TDD implementation plan for authentication, tenant onboarding, safe organization switching, and the authenticated application shell.
 - Add a reusable production-frontend skill with screen specifications, local visual verification, and monorepo-aware structural auditing.
 - Add explicit frontend deliverables to every feature-first roadmap task.
 - Add the end-to-end master implementation checklist for feature-first MVP and production delivery.
