@@ -75,18 +75,18 @@ This document tracks product capabilities and integration evidence. It does not 
 - Consumes: local `backend` prototype commits and uncommitted review fixes.
 - Produces: local-only `archive/database-first-2026-07-18`, restored public `backend`, and documentation that distinguishes retained database invariants from superseded delivery order.
 
-- [ ] Confirm `develop` contains this master plan and has no unrelated changes.
-- [ ] Inspect `backend` commits, dirty files, upstream SHA, and worktree path.
-- [ ] Create local branch `archive/database-first-2026-07-18` at the prototype HEAD.
-- [ ] Commit the dirty prototype review fixes on the archive branch without pushing it.
-- [ ] Verify the archive contains every prototype commit and dirty file before changing `backend`.
-- [ ] Restore `backend` to the verified pre-database-first upstream baseline.
-- [ ] Mark database phase delivery as superseded while preserving its tenant, integrity, migration, audit, and recovery decisions as references.
-- [ ] Run `just ci`, `git diff --check`, and the repository license audit on the restored baseline.
-- [ ] Commit documentation on `develop` as `docs(roadmap): supersede database-first delivery`.
-- [ ] Record the archive SHA and restored backend SHA below.
+- [x] Confirm `develop` contains this master plan and has no unrelated changes.
+- [x] Inspect `backend` commits, dirty files, upstream SHA, and worktree path.
+- [x] Create local branch `archive/database-first-2026-07-18` at the prototype HEAD.
+- [x] Commit the dirty prototype review fixes on the archive branch without pushing it.
+- [x] Verify the archive contains every prototype commit and dirty file before changing `backend`.
+- [x] Restore `backend` to the verified pre-database-first upstream baseline.
+- [x] Remove database phase delivery documents while retaining tenant, integrity, migration, audit, and recovery constraints in the authoritative system and engineering standards.
+- [x] Run `just ci`, `git diff --check`, and the repository license audit on the restored baseline.
+- [x] Commit documentation on `develop` as `docs(roadmap): remove database-first delivery`.
+- [x] Record the archive SHA and restored backend SHA below.
 
-**Evidence:** Not started.
+**Evidence:** Completed on 2026-07-18. The unpushed prototype and review work is preserved locally at `archive/database-first-2026-07-18` commit `6b375ce`. Public `backend` is clean and matches `origin/backend` at `955e755`. Cleanup commit `5c57c1b` removes the superseded RFC, phase roadmap, and Phase 0 plan. Fresh `just ci`, Compose configuration, diff, license, and repository audits passed on the restored and cleaned branches; the develop browser gate passed 1/1 Playwright test.
 
 ---
 
@@ -431,7 +431,7 @@ This document tracks product capabilities and integration evidence. It does not 
 
 | Task | Capability               | Status      | Backend evidence | Frontend evidence | Develop integration |
 | ---: | ------------------------ | ----------- | ---------------- | ----------------- | ------------------- |
-|    0 | Roadmap transition       | Not started | —                | —                 | —                   |
+|    0 | Roadmap transition       | Complete    | `955e755`        | Not changed       | `5c57c1b`           |
 |    1 | Organization access      | Not started | —                | —                 | —                   |
 |    2 | Membership authorization | Not started | —                | —                 | —                   |
 |    3 | Supply registry          | Not started | —                | —                 | —                   |
