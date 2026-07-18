@@ -26,6 +26,7 @@
     "db:seed": "tsx src/seed.ts",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:integration": "vitest run tests/organization-access.integration.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

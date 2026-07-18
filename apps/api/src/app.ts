@@ -15,10 +15,16 @@ import {
   createHealthRouter,
   type HealthRouterDependencies,
 } from "./modules/platform/http/health-router.js";
+import type { AccessService } from "./modules/access/application/access-service.js";
+import { createAccessRouter } from "./modules/access/http/access-router.js";
+import { createAuthenticationMiddleware } from "./platform/auth/authentication-middleware.js";
+import type { OidcAuthenticator } from "./platform/auth/oidc-authenticator.js";
 import { createProblemDetails } from "./platform/errors/problem-details.js";
 import { getRequestId } from "./platform/http/request-id.js";
 
 export interface AppOptions extends HealthRouterDependencies {
+  accessService?: AccessService;
+  authenticator?: OidcAuthenticator;
   corsOrigins: string[];
   logger?: Logger;
   trustProxy?: boolean | number | string;
@@ -67,6 +73,13 @@ export function createApp(options: AppOptions) {
     }),
   );
   app.use(createHealthRouter({ readiness: options.readiness }));
+  if (options.accessService && options.authenticator) {
+    app.use(
+      "/v1",
+      createAuthenticationMiddleware(options.authenticator),
+      createAccessRouter(options.accessService),
+    );
+  }
 
   app.use((request, response) => {
     response
