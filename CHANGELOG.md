@@ -15,6 +15,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Add explicit frontend deliverables to every feature-first roadmap task.
 - Add the end-to-end master implementation checklist for feature-first MVP and production delivery.
 - Define the feature-first delivery roadmap, complete MVP boundary, and per-capability integration gates.
 - Establish the public project identity, architecture overview, contribution guidance, security process, governance model, support routes, and GitHub collaboration templates.

@@ -36,6 +36,7 @@ This document tracks product capabilities and integration evidence. It does not 
 - [ ] Brainstorm and approve the capability design against its actor, outcome, invariants, failure modes, and rejection cases.
 - [ ] Save the design under `docs/superpowers/specs/YYYY-MM-DD-<capability>-design.md` on `develop`.
 - [ ] Write a self-contained TDD plan under `docs/superpowers/plans/features/NN-<capability>.md` with exact files, interfaces, test code, commands, and commits.
+- [ ] Define the capability's page map, primary user journey, reusable components, responsive behavior, and loading, empty, validation, forbidden, conflict, dependency-error, and success states before frontend implementation.
 - [ ] Execute backend steps on `backend`, push them, and merge them into `develop`.
 - [ ] Execute frontend steps on `frontend` from the updated `develop`, push them, and merge them into `develop`.
 - [ ] Run the capability integration and browser gates on `develop`.
@@ -88,6 +89,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Evidence:** Completed on 2026-07-18. The unpushed prototype and review work is preserved locally at `archive/database-first-2026-07-18` commit `6b375ce`. Public `backend` is clean and matches `origin/backend` at `955e755`. Cleanup commit `5c57c1b` removes the superseded RFC, phase roadmap, and Phase 0 plan. Fresh `just ci`, Compose configuration, diff, license, and repository audits passed on the restored and cleaned branches; the develop browser gate passed 1/1 Playwright test.
 
+**Frontend delivery:** Not applicable. This task changes delivery documentation and restores branch baselines without changing product behavior.
+
 ---
 
 ### Task 1: Organization onboarding, authentication, and application shell
@@ -95,6 +98,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/01-organization-access.md`
 
 **Outcome:** An authenticated user can enter an authorized organization context and see an accessible permission-aware application shell; missing or unauthorized tenant context fails closed.
+
+**Frontend delivery:** Build the sign-in handoff, first-organization onboarding flow, organization selector, authenticated responsive shell, permission-aware navigation, account/session menu, and dedicated loading, forbidden, missing-context, and session-expired pages.
 
 - [ ] Configure Keycloak OIDC validation for issuer, audience, signature, expiry, and subject.
 - [ ] Create or reconcile an organization through an authorized onboarding flow.
@@ -113,6 +118,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** An Admin can invite and manage members while every server-side action enforces Admin, Quality Analyst, Recall Coordinator, or Approver permissions and relevant MFA requirements.
 
+**Frontend delivery:** Build the member directory, invitation form and acceptance flow, member detail/edit drawer, role assignment controls, membership status actions, MFA-required prompt, and permission/stale-session feedback states.
+
 - [ ] Invite a member and bind the invitation to one organization.
 - [ ] Activate, suspend, and revoke membership without deleting history.
 - [ ] Assign and revoke the four MVP roles.
@@ -129,6 +136,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/03-supply-registry.md`
 
 **Outcome:** Authorized users can maintain the minimum product and supply-network master data needed for later traceability, with provenance and optimistic concurrency.
+
+**Frontend delivery:** Build searchable and paginated product, supplier, facility, and component directories; create/edit/detail forms; archive confirmation; provenance display; and a recoverable concurrent-edit conflict experience.
 
 - [ ] Create, view, update, archive, and list products and variants.
 - [ ] Create and maintain suppliers, facilities, and components.
@@ -147,6 +156,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** A user can record or import batches and distribution data, then trace a batch backward to components and forward to markets and privacy-conscious recipient references.
 
+**Frontend delivery:** Build batch and shipment list/detail/edit journeys, component and market relationship views, CSV upload and column-mapping wizard, row-preview validation table, durable import-results screen, and forward/backward trace views.
+
 - [ ] Record batch identity, production facility, actual components, quantity, production time, and expiry.
 - [ ] Record shipments, shipment items, destination markets, and pseudonymous recipient references.
 - [ ] Preview CSV rows before mutation.
@@ -163,6 +174,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/05-evidence-vault.md`
 
 **Outcome:** A Quality Analyst can store, classify, version, review, and retrieve file, structured, or externally referenced evidence without silently replacing history.
+
+**Frontend delivery:** Build the evidence library, classified metadata filters, file/structured/external evidence creation flows, upload and malware-scan progress, quarantine/forbidden states, evidence detail and version history, successor-version action, and controlled download experience.
 
 - [ ] Create evidence metadata with source, provenance, classification, verification state, and occurrence/ingestion times.
 - [ ] Upload files through bounded content validation and an S3-compatible versioned object boundary.
@@ -181,6 +194,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** A Quality Analyst can ingest signals through form, CSV, or API and move them through a fully audited triage state machine.
 
+**Frontend delivery:** Build the signal inbox, signal creation form, CSV import entry point, API-ingestion guidance, signal detail and provenance panel, triage transition controls with reasons, duplicate comparison, and severity/confidence/reliability filters.
+
 - [ ] Ingest manual signals with source and subject provenance.
 - [ ] Import signal CSV files through the validated import boundary.
 - [ ] Expose an organization-scoped idempotent integration endpoint.
@@ -197,6 +212,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/07-incident-investigation.md`
 
 **Outcome:** A validated signal can become an owned incident containing hypotheses, claims, evidence, tasks, assessments, and immutable decision reasons.
+
+**Frontend delivery:** Build the incident queue and workspace with overview, linked signals, hypotheses, claims/evidence, investigation tasks, assessments, decision log, owner/deadline controls, valid state actions, and close/reopen confirmation flows.
 
 - [ ] Open an incident from one or more validated signals without duplicate promotion.
 - [ ] Assign and reassign an authorized incident owner.
@@ -215,6 +232,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** An analyst can explain which products, batches, shipments, recipients, and markets may be affected and view a reproducible product-trust snapshot with explicit unknowns.
 
+**Frontend delivery:** Build an accessible Evidence Graph explorer with list/table fallback, bounded traversal controls, relationship detail panel, affected-scope review, trust snapshot comparison, and clear supporting, opposing, missing, restricted, and unknown-data states.
+
 - [ ] Create typed, directed, sourced, and effective-dated graph relationships.
 - [ ] Traverse component, batch, supplier, facility, shipment, market, evidence, and claim relationships.
 - [ ] Prevent cross-tenant edges and unsafe unbounded traversal.
@@ -231,6 +250,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/09-advisory-ai.md`
 
 **Outcome:** Users may request evidence extraction, duplicate suggestions, or cited incident summaries while retaining human control and a complete manual fallback.
+
+**Frontend delivery:** Build advisory-action entry points, job progress and failure states, citation-linked extraction/duplicate/summary review panels, accept-correct-reject controls, limitations and confidence display, and a complete manual workflow when AI is unavailable.
 
 - [ ] Record an AI job with tenant, task, input references, pipeline version, and correlation ID.
 - [ ] Execute the job through Temporal and the private Python service.
@@ -249,6 +270,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** A Recall Coordinator can create versioned recall options and compare reproducible scope, coverage, missed risk, over-recall, time, and cost estimates.
 
+**Frontend delivery:** Build the recall-option editor, scope selector, assumptions/uncertainty fields, simulation run and stale-input states, side-by-side accessible comparison, metric definition drill-down, version history, and submit-for-review confirmation.
+
 - [ ] Create draft options from an incident and exact evidence/trust snapshot.
 - [ ] Define product, batch, shipment, market, recipient, and action scope.
 - [ ] Capture assumptions, unresolved uncertainty, success criteria, and stop criteria.
@@ -265,6 +288,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/11-policy-approval.md`
 
 **Outcome:** An Admin can configure bounded deterministic rules, and authorized Approvers can decide on an immutable option version under quorum and separation-of-duties constraints.
+
+**Frontend delivery:** Build bounded policy and approval-matrix editors, validation/preview views, approval inbox, immutable review snapshot, quorum and authority status, approve/reject/request-changes/abstain dialogs, MFA challenge, and invalidated/expired decision states.
 
 - [ ] Configure versioned rules for severity, exposure, market, category, and risk threshold.
 - [ ] Configure approver role, authority scope, quorum, MFA, expiry, and separation of duties.
@@ -283,6 +308,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** Only a currently valid approved option can produce one executable plan version and start one durable Temporal recall workflow.
 
+**Frontend delivery:** Build the executable-plan review, exact approved-version summary, preflight policy/approval checks, idempotent start confirmation, starting/recovering/already-started states, workflow reference display, and blocked-execution explanations.
+
 - [ ] Create an immutable plan from the exact approved option and notification content versions.
 - [ ] Re-evaluate current policy and approval immediately before execution.
 - [ ] Reject stale, invalidated, rejected, expired, or unauthorized execution attempts.
@@ -299,6 +326,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/13-recall-actions.md`
 
 **Outcome:** Recall Coordinators can monitor dependency-aware work while authorized users complete tasks or perform audited pause, resume, retry, and manual intervention.
+
+**Frontend delivery:** Build the recall operations workspace with dependency-aware task list and timeline, assignee/deadline controls, task detail and exception views, pause/resume/retry/reassign/escalate dialogs, recovery state, and permission-aware live status updates.
 
 - [ ] Generate action tasks from the approved plan with dependencies, owners, deadlines, and idempotency keys.
 - [ ] Prevent dependent tasks from starting before prerequisites are satisfied.
@@ -317,6 +346,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** TraceGuard sends approved, versioned content once per intended recipient, distinguishes delivery from acknowledgement, and safely retries only the failed subset.
 
+**Frontend delivery:** Build the in-app notification center and unread state, notification-content preview, recipient delivery dashboard, per-channel status and failure detail, acknowledgement action, failed-recipient filtering, and authorized retry/escalation controls.
+
 - [ ] Version notification templates by channel and locale.
 - [ ] Bind outbound content to the approved plan version.
 - [ ] Create one notification per recipient with privacy-conscious addressing.
@@ -333,6 +364,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/15-containment-completion.md`
 
 **Outcome:** Operations users can record affected, located, contained, returned, and unresolved quantities, and the execution can finish only under explicit evidence-backed criteria.
+
+**Frontend delivery:** Build the containment dashboard, scoped measurement-entry flow, quantity/unit validation, coverage and unresolved-exposure visualizations with explicit unknowns, exception/evidence panel, and criteria-driven completion review and confirmation.
 
 - [ ] Record measurements by approved scope item, source, time, unit, and actor.
 - [ ] Validate units, nonnegative quantities, scope ownership, and denominator provenance.
@@ -351,6 +384,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** Users can measure detection, decision, approval, notification, acknowledgement, containment, and trust-recovery performance from explicit definitions and sources.
 
+**Frontend delivery:** Build the recovery dashboard with metric cards and trends, definition/source drill-down, baseline and comparison controls, missing/uncertain data treatments, trusted-state evidence view, and audited correction workflow.
+
 - [ ] Define metric name, scope, numerator, denominator, time window, unit, and source.
 - [ ] Establish an immutable recovery baseline when incident action begins.
 - [ ] Record measurements and derive snapshots without overwriting history.
@@ -368,6 +403,8 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Outcome:** An incident produces corrective or preventive work that cannot close until an authorized effectiveness check provides sufficient evidence.
 
+**Frontend delivery:** Build the CAPA register and detail workspace, root-cause and action forms, owner/deadline/escalation views, lifecycle controls, effectiveness-check review with evidence, ineffective-loop history, and guarded close confirmation.
+
 - [ ] Record problem statement, root cause, method, incident links, and supporting evidence.
 - [ ] Create corrective or preventive actions with owner, due date, verification method, and escalation.
 - [ ] Move through Proposed, Approved, In Progress, Verification, Effective/Ineffective, and Closed transitions.
@@ -384,6 +421,8 @@ This document tracks product capabilities and integration evidence. It does not 
 **Feature plan:** `docs/superpowers/plans/features/18-mvp-decision-trail.md`
 
 **Outcome:** An authorized user can trace every consequential fact, version, decision, workflow action, recovery measurement, and CAPA result from the originating signal, and the complete MVP passes release gates.
+
+**Frontend delivery:** Build the permission-filtered end-to-end decision timeline, actor and artifact filters, exact-version detail links, restricted-evidence placeholders, audit-package export flow, and final responsive/accessibility polish across the critical MVP journey.
 
 - [ ] Provide a permission-filtered timeline from signal ingestion through CAPA effectiveness.
 - [ ] Link exact evidence, assessment, option, policy, approval, plan, workflow, notification, measurement, and CAPA versions.
@@ -410,6 +449,8 @@ This document tracks product capabilities and integration evidence. It does not 
 - `docs/superpowers/plans/features/25-measured-performance.md`
 
 **Outcome:** TraceGuard expands from the verified MVP through measured, independently releasable production capabilities rather than a single hardening batch.
+
+**Frontend delivery:** For each post-MVP subplan, define and implement its user-facing surface: hybrid-search results and filters, integration/webhook/provider configuration and health, report/export builders and job status, operational health and recovery dashboards, plus measured performance states for large datasets.
 
 - [ ] Add tenant- and permission-filtered PostgreSQL full-text search.
 - [ ] Add pgvector semantic retrieval only after evidence permission and citation behavior are proven.
