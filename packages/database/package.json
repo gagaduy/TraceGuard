@@ -23,10 +23,11 @@
     "build": "tsc -p tsconfig.build.json",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:runtime": "node dist/migrate.js",
     "db:seed": "tsx src/seed.ts",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:integration": "vitest run tests/organization-access.integration.test.ts",
+    "test:integration": "vitest run tests/*.integration.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
