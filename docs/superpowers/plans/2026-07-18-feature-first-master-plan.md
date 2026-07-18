@@ -64,9 +64,9 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Files:**
 
-- Modify: `docs/roadmaps/database-implementation.md`
-- Modify: `docs/rfcs/0001-database-architecture.md`
-- Modify: `docs/plans/database/2026-07-17-phase-0-foundation.md`
+- Delete: `docs/roadmaps/database-implementation.md`
+- Delete: `docs/rfcs/0001-database-architecture.md`
+- Delete: `docs/plans/database/2026-07-17-phase-0-foundation.md`
 - Modify: `CHANGELOG.md`
 - Verify: `apps/`, `packages/`, `compose.yaml`, `justfile`
 

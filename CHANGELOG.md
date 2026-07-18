@@ -11,11 +11,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
-- Reduce the mature database design from 117 tables to a need-driven ceiling of 60 without weakening tenant, audit, approval, or migration guarantees.
-- Add the executable Phase 0 database foundation implementation plan.
-- Publish the accepted database RFC and phased implementation roadmap.
 - Add a portable open-source repository skill and root agent guide for handoff.
-- Document the approved phased architecture for the complete TraceGuard database.
 
 ### Added
 
@@ -35,6 +31,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Add the Temporal TypeScript worker process, validated runtime configuration, and deterministic platform probe workflow.
 - Add the private FastAPI compute-service boundary with versioned health schemas, safe readiness failure, locked Python dependencies, and tests.
 - Containerize the API, Temporal worker, and private AI service as non-root application services.
+
+### Removed
+
+- Remove the superseded database-first RFC, phase roadmap, and foundation plan; feature slices now introduce only the schema they use.
 
 ### Fixed
 
