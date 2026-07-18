@@ -19,6 +19,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Define the feature-first delivery roadmap, complete MVP boundary, and per-capability integration gates.
 - Establish the public project identity, architecture overview, contribution guidance, security process, governance model, support routes, and GitHub collaboration templates.
 - Declare Apache-2.0 licensing and file-level SPDX conventions for project-owned files.
 - Add the pnpm and Turborepo workspace foundation, shared TypeScript quality configuration, stable `just` command interface, and local toolchain diagnostics.
