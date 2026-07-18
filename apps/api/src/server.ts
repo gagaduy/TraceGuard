@@ -8,11 +8,24 @@ import pino from "pino";
 
 import { createApp } from "./app.js";
 import { loadEnvironment } from "./config/env.js";
+import { createAccessService } from "./modules/access/application/access-service.js";
+import { createAccessRepository } from "./modules/access/infrastructure/access-repository.js";
+import { createOidcAuthenticator } from "./platform/auth/oidc-authenticator.js";
 
 const environment = loadEnvironment();
 const logger = pino({ level: environment.logLevel });
 const database = createDatabase({ connectionString: environment.databaseUrl });
+const authenticator = createOidcAuthenticator({
+  audience: environment.oidcAudience,
+  issuer: environment.oidcIssuer,
+  jwksUrl: environment.oidcJwksUrl,
+});
+const accessService = createAccessService({
+  repository: createAccessRepository({ database: database.db }),
+});
 const app = createApp({
+  accessService,
+  authenticator,
   corsOrigins: environment.corsOrigins,
   logger,
   readiness: async () => {

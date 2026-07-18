@@ -46,6 +46,9 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
       LOG_LEVEL: ${TRACEGUARD_LOG_LEVEL:-info}
       NODE_ENV: development
+      OIDC_AUDIENCE: ${OIDC_AUDIENCE:-traceguard-api}
+      OIDC_ISSUER: ${OIDC_ISSUER:-http://localhost:8081/realms/traceguard}
+      OIDC_JWKS_URL: ${OIDC_JWKS_URL:-http://keycloak:8080/realms/traceguard/protocol/openid-connect/certs}
       PORT: 4000
     healthcheck:
       test:
@@ -212,7 +215,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.3.2
     profiles: [core]
-    command: [start-dev, --health-enabled=true]
+    command: [start-dev, --health-enabled=true, --import-realm]
     depends_on:
       postgres:
         condition: service_healthy
@@ -233,6 +236,8 @@ services:
       start_period: 30s
     ports:
       - "127.0.0.1:${KEYCLOAK_PORT:-8081}:8080"
+    volumes:
+      - ./infrastructure/keycloak/traceguard-realm.json:/opt/keycloak/data/import/traceguard-realm.json:ro
     networks: [application, data]
     restart: unless-stopped
 
