@@ -4,6 +4,7 @@
 import { buttonVariants, cn } from "@traceguard/ui";
 
 import { ProductLoop } from "@/components/product-loop";
+import { SignInButton } from "@/components/auth/sign-in-button";
 
 const boundaries = [
   {
@@ -57,6 +58,7 @@ export default function Home() {
           >
             GitHub
           </a>
+          <SignInButton />
         </div>
       </nav>
 
