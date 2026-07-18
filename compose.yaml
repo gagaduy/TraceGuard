@@ -39,10 +39,10 @@ services:
       dockerfile: apps/api/Dockerfile
     profiles: [app]
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     environment:
-      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+      DATABASE_URL: postgresql://traceguard:${TRACEGUARD_DATABASE_PASSWORD:?Set TRACEGUARD_DATABASE_PASSWORD in .env}@postgres:5432/traceguard
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
       LOG_LEVEL: ${TRACEGUARD_LOG_LEVEL:-info}
       NODE_ENV: development
@@ -66,6 +66,19 @@ services:
       - "127.0.0.1:${API_PORT:-4000}:4000"
     networks: [application, data]
     restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/database-migrate.Dockerfile
+    profiles: [app]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://traceguard:${TRACEGUARD_DATABASE_PASSWORD:?Set TRACEGUARD_DATABASE_PASSWORD in .env}@postgres:5432/traceguard
+    networks: [data]
+    restart: "no"
 
   workflows:
     build:
@@ -120,10 +133,12 @@ services:
       timeout: 5s
       retries: 12
       start_period: 10s
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql
+      - postgres-development-data:/var/lib/postgresql
       - ./infrastructure/compose/postgres/init-databases.sh:/docker-entrypoint-initdb.d/10-init-databases.sh:ro
-    networks: [data]
+    networks: [data, database-access]
     restart: unless-stopped
 
   valkey:
@@ -312,11 +327,14 @@ services:
 
 networks:
   application:
+  database-access:
   data:
     internal: true
 
 volumes:
-  postgres-data:
+  # The former postgres-data volume is intentionally left untouched. Existing
+  # installations may retain it until the owner explicitly archives or removes it.
+  postgres-development-data:
   minio-data:
   mailpit-data:
   prometheus-data:
