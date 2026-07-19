@@ -52,6 +52,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Fixed
 
+- Build workspace dependencies before typed lint and typecheck tasks so clean
+  CI checkouts resolve package declarations reliably.
 - Record privacy-safe audit events for denied organization-context access and
   unauthorized organization settings mutations.
 - Keep organization navigation compatible with clean generated Next.js route
