@@ -109,10 +109,25 @@ export function createAccessRepository(options: {
   async function getAuthorizedOrganization(
     identity: AuthenticatedIdentity,
     slug: string,
+    correlationId: string,
   ) {
     const identityRecord = await reconcileIdentity(identity);
     const rows = await organizationRows(identityRecord.id, slug);
     if (!rows[0]) {
+      const [existingOrganization] = await options.database
+        .select({ id: organizations.id })
+        .from(organizations)
+        .where(eq(organizations.slug, slug))
+        .limit(1);
+      if (existingOrganization) {
+        await options.database.insert(auditEvents).values({
+          action: "organization.access_denied",
+          actorIdentityId: identityRecord.id,
+          after: { outcome: "denied", requestedSlug: slug },
+          correlationId,
+          organizationId: existingOrganization.id,
+        });
+      }
       throw new AccessError(
         "organization_not_found",
         404,
@@ -256,14 +271,29 @@ export function createAccessRepository(options: {
       };
     },
 
-    async getOrganization(identity, slug) {
-      const authorized = await getAuthorizedOrganization(identity, slug);
+    async getOrganization(identity, slug, correlationId) {
+      const authorized = await getAuthorizedOrganization(
+        identity,
+        slug,
+        correlationId,
+      );
       return mapOrganization(authorized.organization, authorized.roles);
     },
 
     async updateOrganization(identity, slug, input, correlationId) {
-      const authorized = await getAuthorizedOrganization(identity, slug);
+      const authorized = await getAuthorizedOrganization(
+        identity,
+        slug,
+        correlationId,
+      );
       if (!authorized.roles.includes("admin")) {
+        await options.database.insert(auditEvents).values({
+          action: "organization.settings_update_denied",
+          actorIdentityId: authorized.identityRecord.id,
+          after: { outcome: "denied" },
+          correlationId,
+          organizationId: authorized.organization.id,
+        });
         throw new AccessError(
           "organization_access_denied",
           403,

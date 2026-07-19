@@ -23,6 +23,7 @@ export interface AccessRepository {
   getOrganization(
     identity: AuthenticatedIdentity,
     slug: string,
+    correlationId: string,
   ): Promise<OrganizationDetail>;
   updateOrganization(
     identity: AuthenticatedIdentity,
@@ -122,8 +123,16 @@ export function createAccessService(options: { repository: AccessRepository }) {
     getCurrentIdentity(identity: AuthenticatedIdentity) {
       return options.repository.getCurrentIdentity(identity);
     },
-    getOrganization(identity: AuthenticatedIdentity, slug: string) {
-      return options.repository.getOrganization(identity, normalizeSlug(slug));
+    getOrganization(
+      identity: AuthenticatedIdentity,
+      slug: string,
+      correlationId: string,
+    ) {
+      return options.repository.getOrganization(
+        identity,
+        normalizeSlug(slug),
+        correlationId,
+      );
     },
     updateOrganization(
       identity: AuthenticatedIdentity,
