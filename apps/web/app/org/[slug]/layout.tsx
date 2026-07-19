@@ -3,7 +3,6 @@
 
 "use client";
 
-import type { Route } from "next";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type MouseEvent, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,6 +20,10 @@ import {
 } from "@/lib/access/organization-preference";
 import { clearOrganizationQueryCache } from "@/lib/access/organization-query-cache";
 import { useAuth } from "@/lib/auth/auth-provider";
+import {
+  isSafeReturnUrl,
+  type SafeOrganizationRoute,
+} from "@/lib/auth/safe-return-url";
 
 export default function OrganizationLayout({
   children,
@@ -42,7 +45,7 @@ function OrganizationWorkspace({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [pendingNavigation, setPendingNavigation] = useState<{
     destination: string;
-    path: string;
+    path: SafeOrganizationRoute;
   }>();
   const currentOrganization = identity?.organizations.find(
     ({ slug }) => slug === params.slug,
@@ -91,7 +94,7 @@ function OrganizationWorkspace({ children }: { children: ReactNode }) {
     void completeNavigation(`/org/${slug}/overview`);
   }
 
-  async function completeNavigation(path: string) {
+  async function completeNavigation(path: SafeOrganizationRoute) {
     const targetSlug = /^\/org\/([^/]+)\//.exec(path)?.[1];
     if (targetSlug && targetSlug !== currentOrganization?.slug) {
       api.resetTenantContext();
@@ -100,7 +103,7 @@ function OrganizationWorkspace({ children }: { children: ReactNode }) {
     }
     setDirty(false);
     setPendingNavigation(undefined);
-    router.push(path as Route);
+    router.push(path);
   }
 
   function guardNavigation(event: MouseEvent<HTMLDivElement>) {
@@ -115,7 +118,7 @@ function OrganizationWorkspace({ children }: { children: ReactNode }) {
     if (target.origin !== window.location.origin) return;
     const path = `${target.pathname}${target.search}${target.hash}`;
     const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    if (path === current) return;
+    if (path === current || !isSafeReturnUrl(path)) return;
     event.preventDefault();
     setPendingNavigation({
       destination: anchor.textContent?.trim() || "the selected page",

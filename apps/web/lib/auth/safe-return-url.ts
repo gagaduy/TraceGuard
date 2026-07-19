@@ -7,7 +7,10 @@ const returnUrlKey = "traceguard.safe-return-url";
 const organizationRoute =
   /^\/org\/([a-z0-9]+(?:-[a-z0-9]+)*)\/(overview|settings)$/;
 
-export function isSafeReturnUrl(value: string): boolean {
+export type SafeOrganizationRoute =
+  `/org/${string}/overview` | `/org/${string}/settings`;
+
+export function isSafeReturnUrl(value: string): value is SafeOrganizationRoute {
   return organizationRoute.test(value);
 }
 
@@ -17,7 +20,7 @@ export function rememberSafeReturnUrl(value: string): void {
   }
 }
 
-export function consumeSafeReturnUrl(): string | undefined {
+export function consumeSafeReturnUrl(): SafeOrganizationRoute | undefined {
   if (typeof window === "undefined") return undefined;
   const value = window.sessionStorage.getItem(returnUrlKey);
   window.sessionStorage.removeItem(returnUrlKey);
@@ -27,8 +30,8 @@ export function consumeSafeReturnUrl(): string | undefined {
 export function resolveAuthorizedReturnUrl(
   identity: CurrentIdentity,
   value: string | undefined,
-): string | undefined {
-  if (!value) return undefined;
+): SafeOrganizationRoute | undefined {
+  if (!value || !isSafeReturnUrl(value)) return undefined;
   const match = organizationRoute.exec(value);
   if (!match) return undefined;
   return identity.organizations.some(({ slug }) => slug === match[1])

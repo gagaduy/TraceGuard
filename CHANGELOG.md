@@ -25,6 +25,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Fixed
 
+- Keep organization navigation compatible with clean generated Next.js route
+  types.
 - Complete organization access with silent SSO checks, safe session return,
   tenant-request cancellation, dirty-form switching protection, and verified
   desktop, constrained, and mobile browser journeys.
