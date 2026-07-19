@@ -7,11 +7,12 @@ import { resolve } from "node:path";
 
 import * as databaseSchema from "@traceguard/database/schema";
 import {
+  auditEvents,
   identities,
   membershipRoles,
   organizationMemberships,
 } from "@traceguard/database/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -140,11 +141,22 @@ describeWithDatabase("organization access use cases", () => {
     );
 
     await expect(
-      service.getOrganization(admin, "other-foods"),
+      service.getOrganization(admin, "other-foods", "correlation-denied"),
     ).rejects.toMatchObject({
       code: "organization_not_found",
       status: 404,
     });
+    const deniedAudit = await database
+      .select()
+      .from(auditEvents)
+      .where(
+        and(
+          eq(auditEvents.action, "organization.access_denied"),
+          eq(auditEvents.correlationId, "correlation-denied"),
+        ),
+      );
+    expect(deniedAudit).toHaveLength(1);
+    expect(deniedAudit[0]?.actorIdentityId).toBeTruthy();
 
     const currentAdmin = await service.getCurrentIdentity(admin);
     const currentAnalyst = await service.getCurrentIdentity(analyst);
@@ -177,6 +189,16 @@ describeWithDatabase("organization access use cases", () => {
       code: "organization_access_denied",
       status: 403,
     });
+    const settingsDeniedAudit = await database
+      .select()
+      .from(auditEvents)
+      .where(
+        and(
+          eq(auditEvents.action, "organization.settings_update_denied"),
+          eq(auditEvents.correlationId, "correlation-analyst"),
+        ),
+      );
+    expect(settingsDeniedAudit).toHaveLength(1);
 
     const updated = await service.updateOrganization(
       admin,

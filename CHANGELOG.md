@@ -50,6 +50,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Fixed
 
+- Record privacy-safe audit events for denied organization-context access and
+  unauthorized organization settings mutations.
 - Ensure `just down` stops services from every supported Compose profile without deleting named volumes.
 - Normalize trailing blank lines in backend container metadata.
 - Point Docker dependency updates at the directories that contain Dockerfiles.

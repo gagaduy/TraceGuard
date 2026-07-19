@@ -133,7 +133,11 @@ export function createAccessRouter(accessService: AccessService) {
       return;
     }
     return handle(request, response, () =>
-      accessService.getOrganization(request.auth, slug.data),
+      accessService.getOrganization(
+        request.auth,
+        slug.data,
+        getRequestId(request),
+      ),
     );
   });
 
