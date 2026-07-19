@@ -15,6 +15,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Changed
 
+- Close the organization-access capability with reviewed backend, frontend,
+  integration, browser, and production-image evidence.
 - Make `just up` and `just dev` apply database migrations automatically, and document direct local PostgreSQL inspection on port 5433.
 
 ### Added
@@ -52,16 +54,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Record privacy-safe audit events for denied organization-context access and
   unauthorized organization settings mutations.
-- Ensure `just down` stops services from every supported Compose profile without deleting named volumes.
-- Normalize trailing blank lines in backend container metadata.
-- Point Docker dependency updates at the directories that contain Dockerfiles.
-
-### Fixed
-
 - Keep organization navigation compatible with clean generated Next.js route
   types.
 - Complete organization access with silent SSO checks, safe session return,
   tenant-request cancellation, dirty-form switching protection, and verified
   desktop, constrained, and mobile browser journeys.
+- Ensure `just down` stops services from every supported Compose profile without deleting named volumes.
+- Normalize trailing blank lines in backend container metadata.
+- Point Docker dependency updates at the directories that contain Dockerfiles.
 
 [Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main

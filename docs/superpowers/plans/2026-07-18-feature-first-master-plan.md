@@ -101,16 +101,30 @@ This document tracks product capabilities and integration evidence. It does not 
 
 **Frontend delivery:** Build the sign-in handoff, first-organization onboarding flow, organization selector, authenticated responsive shell, permission-aware navigation, account/session menu, and dedicated loading, forbidden, missing-context, and session-expired pages.
 
-- [ ] Configure Keycloak OIDC validation for issuer, audience, signature, expiry, and subject.
-- [ ] Create or reconcile an organization through an authorized onboarding flow.
-- [ ] Resolve organization context explicitly for every business request.
-- [ ] Add organization switching without leaking cached data between tenants.
-- [ ] Add authenticated layout, navigation, loading, empty, forbidden, and session-expired states.
-- [ ] Prove invalid token, absent tenant, and cross-tenant organization access are rejected.
-- [ ] Record onboarding and organization-context audit events.
-- [ ] Pass API, component, accessibility, and Playwright login/context tests.
+- [x] Configure Keycloak OIDC validation for issuer, audience, signature, expiry, and subject.
+- [x] Create or reconcile an organization through an authorized onboarding flow.
+- [x] Resolve organization context explicitly for every business request.
+- [x] Add organization switching without leaking cached data between tenants.
+- [x] Add authenticated layout, navigation, loading, empty, forbidden, and session-expired states.
+- [x] Prove invalid token, absent tenant, and cross-tenant organization access are rejected.
+- [x] Record onboarding and organization-context audit events.
+- [x] Pass API, component, accessibility, and Playwright login/context tests.
 
-**Evidence:** Not started.
+**Evidence:** Completed with owner approval on 2026-07-19. The approved baseline
+is backend commit `5cba1fe`, merged by `fdc3823`, and frontend commit `59d6463`,
+merged by `065b682`. The completion units are backend commit `f44d081`, merged
+by `f4560fa`, and frontend commits `26c83e9` and `36e7cad`, merged by `59aadab`
+and `22d5fcb`. Together they add privacy-safe denied-access audit events, tenant
+request cancellation and query
+cache removal, memory-only session handling, safe return routes, a dedicated
+session-expired route, unsaved-change protection, responsive navigation, silent
+SSO production packaging, and full-stack browser coverage. Final local gates
+passed API lint, typecheck, build, 16 unit tests, two PostgreSQL integration
+tests, web lint, typecheck, production build, 13 component/unit tests, strict
+frontend audit, repository audits, and 6/6 Playwright tests at 1440x900,
+1024x768, and 390x844. Production-image verification reached the Keycloak form
+and completed a real reviewer login into onboarding. E2E cleanup left zero
+E2E-scoped identities, organizations, and Keycloak users. `main` is unchanged.
 
 ### Task 2: Membership lifecycle and four-role authorization
 
@@ -470,27 +484,27 @@ This document tracks product capabilities and integration evidence. It does not 
 
 ## Master completion record
 
-| Task | Capability               | Status      | Backend evidence | Frontend evidence | Develop integration |
-| ---: | ------------------------ | ----------- | ---------------- | ----------------- | ------------------- |
-|    0 | Roadmap transition       | Complete    | `955e755`        | Not changed       | `5c57c1b`           |
-|    1 | Organization access      | Not started | —                | —                 | —                   |
-|    2 | Membership authorization | Not started | —                | —                 | —                   |
-|    3 | Supply registry          | Not started | —                | —                 | —                   |
-|    4 | Traceability import      | Not started | —                | —                 | —                   |
-|    5 | Evidence vault           | Not started | —                | —                 | —                   |
-|    6 | Signal triage            | Not started | —                | —                 | —                   |
-|    7 | Incident investigation   | Not started | —                | —                 | —                   |
-|    8 | Impact and trust         | Not started | —                | —                 | —                   |
-|    9 | Advisory AI              | Not started | —                | —                 | —                   |
-|   10 | Recall options           | Not started | —                | —                 | —                   |
-|   11 | Policy approval          | Not started | —                | —                 | —                   |
-|   12 | Recall plan workflow     | Not started | —                | —                 | —                   |
-|   13 | Recall actions           | Not started | —                | —                 | —                   |
-|   14 | Notifications            | Not started | —                | —                 | —                   |
-|   15 | Containment completion   | Not started | —                | —                 | —                   |
-|   16 | Recovery                 | Not started | —                | —                 | —                   |
-|   17 | CAPA effectiveness       | Not started | —                | —                 | —                   |
-|   18 | MVP decision trail       | Not started | —                | —                 | —                   |
-|   19 | Production expansion     | Not started | —                | —                 | —                   |
+| Task | Capability               | Status      | Backend evidence | Frontend evidence    | Develop integration             |
+| ---: | ------------------------ | ----------- | ---------------- | -------------------- | ------------------------------- |
+|    0 | Roadmap transition       | Complete    | `955e755`        | Not changed          | `5c57c1b`                       |
+|    1 | Organization access      | Complete    | `f44d081`        | `26c83e9`, `36e7cad` | `f4560fa`, `59aadab`, `22d5fcb` |
+|    2 | Membership authorization | Not started | —                | —                    | —                               |
+|    3 | Supply registry          | Not started | —                | —                    | —                               |
+|    4 | Traceability import      | Not started | —                | —                    | —                               |
+|    5 | Evidence vault           | Not started | —                | —                    | —                               |
+|    6 | Signal triage            | Not started | —                | —                    | —                               |
+|    7 | Incident investigation   | Not started | —                | —                    | —                               |
+|    8 | Impact and trust         | Not started | —                | —                    | —                               |
+|    9 | Advisory AI              | Not started | —                | —                    | —                               |
+|   10 | Recall options           | Not started | —                | —                    | —                               |
+|   11 | Policy approval          | Not started | —                | —                    | —                               |
+|   12 | Recall plan workflow     | Not started | —                | —                    | —                               |
+|   13 | Recall actions           | Not started | —                | —                    | —                               |
+|   14 | Notifications            | Not started | —                | —                    | —                               |
+|   15 | Containment completion   | Not started | —                | —                    | —                               |
+|   16 | Recovery                 | Not started | —                | —                    | —                               |
+|   17 | CAPA effectiveness       | Not started | —                | —                    | —                               |
+|   18 | MVP decision trail       | Not started | —                | —                    | —                               |
+|   19 | Production expansion     | Not started | —                | —                    | —                               |
 
 Update a row only after its backend, frontend, integration, documentation, and validation gates have objective evidence. A schema, route, mockup, or happy-path demo alone does not complete a capability.

@@ -1130,17 +1130,22 @@ Push `develop` only after owner review. Do not merge or push `main`.
 
 ## Capability review checklist
 
-- [ ] The OpenAPI contract and generated browser types agree.
-- [ ] Keycloak tokens remain in memory and never appear in storage, logs, audit, or errors.
-- [ ] Express validates issuer, audience, signature, expiry, and subject.
-- [ ] PostgreSQL membership is checked for every organization-scoped request.
-- [ ] Bootstrap is atomic and idempotent and grants exactly one Admin role.
-- [ ] Two-tenant tests prove safe not-found behavior and isolation.
-- [ ] Organization switching cancels and removes tenant-scoped cache before navigation.
-- [ ] Admin settings updates use row versions; non-Admins cannot mutate.
-- [ ] Loading, empty, restricted, error, conflict, and session-expired UI states exist.
-- [ ] Desktop, tablet, and mobile browser journeys pass with keyboard and focus evidence.
-- [ ] No dead navigation or fake dashboard data was introduced.
-- [ ] Changelog and SPDX requirements are satisfied for every approved unit.
-- [ ] Backend and frontend were reviewed before commit, merge, and push.
-- [ ] `main` remains unchanged.
+- [x] The OpenAPI contract and generated browser types agree.
+- [x] Keycloak tokens remain in memory and never appear in storage, logs, audit, or errors.
+- [x] Express validates issuer, audience, signature, expiry, and subject.
+- [x] PostgreSQL membership is checked for every organization-scoped request.
+- [x] Bootstrap is atomic and idempotent and grants exactly one Admin role.
+- [x] Two-tenant tests prove safe not-found behavior and isolation.
+- [x] Organization switching cancels and removes tenant-scoped cache before navigation.
+- [x] Admin settings updates use row versions; non-Admins cannot mutate.
+- [x] Loading, empty, restricted, error, conflict, and session-expired UI states exist.
+- [x] Desktop, tablet, and mobile browser journeys pass with keyboard and focus evidence.
+- [x] No dead navigation or fake dashboard data was introduced.
+- [x] Changelog and SPDX requirements are satisfied for every approved unit.
+- [x] Backend and frontend were reviewed before commit, merge, and push.
+- [x] `main` remains unchanged.
+
+Task 1 was approved and integrated on 2026-07-19. Backend completion commit
+`f44d081` was merged by `f4560fa`; frontend completion commits `26c83e9` and
+`36e7cad` were merged by `59aadab` and `22d5fcb`. Final develop validation and
+the documentation commit are recorded in the master completion record.
