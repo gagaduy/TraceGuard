@@ -5,9 +5,10 @@ import { AccessState } from "@/components/access/access-state";
 
 export default function ForbiddenPage() {
   return (
-    <AccessState title="You do not have authority for this action">
+    <AccessState title="This workspace is not available">
       <p>
-        Your organization membership is valid, but the required role is missing.
+        The requested organization could not be opened. It may not exist, or
+        your current account may not have access.
       </p>
       <a href="/">Return to TraceGuard</a>
     </AccessState>

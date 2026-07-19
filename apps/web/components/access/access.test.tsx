@@ -8,6 +8,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AuthenticatedShell } from "./authenticated-shell";
 import { OrganizationOnboardingForm } from "./organization-onboarding-form";
 import { OrganizationSettingsForm } from "./organization-settings-form";
+import { UnsavedChangesDialog } from "./unsaved-changes";
 
 const organization = {
   createdAt: "2026-07-18T00:00:00.000Z",
@@ -64,6 +65,30 @@ describe("organization access UI", () => {
     expect(screen.queryByText("Recall")).not.toBeInTheDocument();
   });
 
+  it("opens mobile navigation with focus containment and returns focus", async () => {
+    const user = userEvent.setup();
+    render(
+      <AuthenticatedShell
+        currentOrganization={organization}
+        identityName="TraceGuard Reviewer"
+        organizations={[organization]}
+      >
+        <h1>Organization overview</h1>
+      </AuthenticatedShell>,
+    );
+    const openButton = screen.getByRole("button", { name: "Open navigation" });
+
+    await user.click(openButton);
+    expect(
+      screen.getByRole("button", { name: "Close navigation" }),
+    ).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(
+      screen.queryByRole("dialog", { name: "Workspace navigation" }),
+    ).not.toBeInTheDocument();
+    await vi.waitFor(() => expect(openButton).toHaveFocus());
+  });
+
   it("renders organization settings read-only without Admin authority", () => {
     render(
       <OrganizationSettingsForm
@@ -77,5 +102,41 @@ describe("organization access UI", () => {
     expect(
       screen.queryByRole("button", { name: "Save changes" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("reports dirty settings and preserves the user's switch decision", async () => {
+    const user = userEvent.setup();
+    const onDirtyChange = vi.fn();
+    render(
+      <OrganizationSettingsForm
+        onDirtyChange={onDirtyChange}
+        onSubmit={vi.fn()}
+        organization={organization}
+      />,
+    );
+
+    await user.type(screen.getByLabelText("Organization name"), " Vietnam");
+    expect(onDirtyChange).toHaveBeenLastCalledWith(true);
+  });
+
+  it("focuses the safe action and confirms an unsaved organization switch", async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+    const onConfirm = vi.fn();
+    render(
+      <UnsavedChangesDialog
+        destination="Other Foods"
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Keep editing" })).toHaveFocus();
+    expect(screen.getByText(/Continue to Other Foods/)).toBeVisible();
+    await user.click(
+      screen.getByRole("button", { name: "Discard and switch" }),
+    );
+    expect(onConfirm).toHaveBeenCalledOnce();
+    expect(onCancel).not.toHaveBeenCalled();
   });
 });

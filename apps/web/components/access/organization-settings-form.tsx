@@ -12,10 +12,12 @@ import type {
 
 export function OrganizationSettingsForm({
   error,
+  onDirtyChange,
   onSubmit,
   organization,
 }: {
   error?: string | undefined;
+  onDirtyChange?: (dirty: boolean) => void;
   onSubmit: (value: UpdateOrganizationRequest) => Promise<void> | void;
   organization: OrganizationDetail;
 }) {
@@ -63,7 +65,13 @@ export function OrganizationSettingsForm({
           aria-label="Organization name"
           disabled={!canEdit}
           maxLength={160}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(event) => {
+            setName(event.target.value);
+            onDirtyChange?.(
+              event.target.value !== organization.name ||
+                timeZone !== organization.timeZone,
+            );
+          }}
           required
           value={name}
         />
@@ -84,7 +92,13 @@ export function OrganizationSettingsForm({
         <select
           aria-label="Default time zone"
           disabled={!canEdit}
-          onChange={(event) => setTimeZone(event.target.value)}
+          onChange={(event) => {
+            setTimeZone(event.target.value);
+            onDirtyChange?.(
+              name !== organization.name ||
+                event.target.value !== organization.timeZone,
+            );
+          }}
           value={timeZone}
         >
           <option value="UTC">UTC</option>

@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { OrganizationSettingsForm } from "@/components/access/organization-settings-form";
+import { useUnsavedChanges } from "@/components/access/unsaved-changes";
 import type {
   OrganizationDetail,
   UpdateOrganizationRequest,
@@ -20,6 +21,9 @@ export default function OrganizationSettingsPage() {
   const [organization, setOrganization] = useState<OrganizationDetail>();
   const [error, setError] = useState<string>();
   const [saved, setSaved] = useState(false);
+  const { setDirty } = useUnsavedChanges();
+
+  useEffect(() => () => setDirty(false), [setDirty]);
 
   useEffect(() => {
     void api
@@ -40,6 +44,7 @@ export default function OrganizationSettingsPage() {
     try {
       setOrganization(await api.updateOrganization(slug, input));
       await refreshIdentity();
+      setDirty(false);
       setSaved(true);
     } catch (cause) {
       setError(
@@ -70,6 +75,7 @@ export default function OrganizationSettingsPage() {
         {organization ? (
           <OrganizationSettingsForm
             error={error}
+            onDirtyChange={setDirty}
             onSubmit={updateOrganization}
             organization={organization}
           />
