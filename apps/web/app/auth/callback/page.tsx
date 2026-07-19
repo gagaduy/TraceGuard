@@ -3,7 +3,6 @@
 
 "use client";
 
-import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -26,16 +25,16 @@ export default function AuthCallbackPage() {
       consumeSafeReturnUrl(),
     );
     if (returnUrl) {
-      router.replace(returnUrl as Route);
+      router.replace(returnUrl);
       return;
     }
     const organization =
       readOrganizationPreference(identity.organizations) ??
       identity.organizations[0];
     router.replace(
-      (organization
+      organization
         ? `/org/${organization.slug}/overview`
-        : "/onboarding/organization") as Route,
+        : "/onboarding/organization",
     );
   }, [authenticated, identity, loading, router]);
 
