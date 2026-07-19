@@ -23,4 +23,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Add the accessible shared UI foundation and a responsive Next.js application shell that explains TraceGuard's product loop, trust boundaries, and pre-release status.
 - Add a pinned, multi-stage, non-root web container and frontend-only Compose application profile.
 
+### Fixed
+
+- Complete organization access with silent SSO checks, safe session return,
+  tenant-request cancellation, dirty-form switching protection, and verified
+  desktop, constrained, and mobile browser journeys.
+
 [Unreleased]: https://github.com/gagaduy/TraceGuard/commits/main

@@ -8,21 +8,39 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  reporter: "html",
+  reporter: process.env.CI ? "dot" : [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
     trace: "on-first-retry",
   },
   projects: [
     {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      name: "wide-desktop",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { height: 900, width: 1440 },
+      },
+    },
+    {
+      name: "constrained",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { height: 768, width: 1024 },
+      },
+    },
+    {
+      name: "mobile",
+      use: { ...devices["Pixel 5"], viewport: { height: 844, width: 390 } },
     },
   ],
-  webServer: {
-    command: "pnpm dev",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-    url: "http://127.0.0.1:3000",
-  },
+  ...(process.env.PLAYWRIGHT_EXTERNAL_SERVER
+    ? {}
+    : {
+        webServer: {
+          command: "pnpm dev",
+          reuseExistingServer: false,
+          timeout: 120_000,
+          url: "http://localhost:3000",
+        },
+      }),
 });

@@ -5,7 +5,13 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 
 import type { OrganizationSummary } from "@/lib/access/types";
 
@@ -25,7 +31,41 @@ export function AuthenticatedShell({
   organizations: OrganizationSummary[];
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const mobileNavigation = useRef<HTMLDivElement>(null);
   const base = `/org/${currentOrganization.slug}`;
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const closeButton = mobileNavigation.current?.querySelector("button");
+    closeButton?.focus();
+  }, [mobileOpen]);
+
+  function closeMobileNavigation() {
+    setMobileOpen(false);
+    requestAnimationFrame(() => menuButton.current?.focus());
+  }
+
+  function handleMobileNavigationKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "Escape") {
+      closeMobileNavigation();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const controls = mobileNavigation.current?.querySelectorAll<HTMLElement>(
+      "button, select, a[href]",
+    );
+    if (!controls?.length) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
+  }
 
   function navigation() {
     return (
@@ -88,6 +128,7 @@ export function AuthenticatedShell({
           aria-label="Open navigation"
           className="menu-button"
           onClick={() => setMobileOpen(true)}
+          ref={menuButton}
           type="button"
         >
           ☰
@@ -97,13 +138,15 @@ export function AuthenticatedShell({
       {mobileOpen ? (
         <div
           className="mobile-navigation"
+          onKeyDown={handleMobileNavigationKeyDown}
+          ref={mobileNavigation}
           role="dialog"
           aria-label="Workspace navigation"
         >
           <button
             aria-label="Close navigation"
             className="menu-button close-button"
-            onClick={() => setMobileOpen(false)}
+            onClick={closeMobileNavigation}
             type="button"
           >
             ×

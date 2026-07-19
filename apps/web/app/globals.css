@@ -126,6 +126,50 @@ select {
   box-shadow: 0 20px 60px rgb(24 52 45 / 10%);
 }
 
+.confirmation-backdrop {
+  position: fixed;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  inset: 0;
+  background: rgb(15 23 42 / 58%);
+  padding: 1rem;
+}
+
+.confirmation-dialog {
+  width: min(100%, 30rem);
+  border: 1px solid var(--app-line);
+  border-radius: 0.9rem;
+  background: var(--app-surface);
+  box-shadow: 0 24px 70px rgb(15 23 42 / 24%);
+  padding: 1.5rem;
+}
+
+.confirmation-dialog h2 {
+  margin: 0.35rem 0 0.65rem;
+  color: var(--app-ink);
+}
+
+.confirmation-dialog p:not(.eyebrow) {
+  color: var(--app-muted);
+}
+
+.confirmation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.confirmation-actions button:not(.primary-action) {
+  border: 1px solid var(--app-line);
+  border-radius: 0.6rem;
+  background: var(--app-surface);
+  color: var(--app-ink);
+  padding: 0.72rem 1rem;
+}
+
 .state-mark,
 .onboarding-brand span {
   display: inline-grid;
@@ -153,6 +197,24 @@ select {
 .access-state-card a {
   color: var(--app-accent);
   font-weight: 700;
+}
+
+.access-state-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@media (max-width: 520px) {
+  .access-state-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .access-state-actions a {
+    padding: 0.5rem;
+  }
 }
 
 .loading-line {

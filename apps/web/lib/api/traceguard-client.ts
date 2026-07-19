@@ -23,9 +23,23 @@ export class TraceGuardApiError extends Error {
 type TokenProvider = () => Promise<string | undefined>;
 
 export class TraceGuardClient {
-  constructor(private readonly tokenProvider: TokenProvider) {}
+  private tenantController = new AbortController();
 
-  private async request<T>(path: string, init?: RequestInit): Promise<T> {
+  constructor(
+    private readonly tokenProvider: TokenProvider,
+    private readonly onSessionExpired?: () => void,
+  ) {}
+
+  resetTenantContext(): void {
+    this.tenantController.abort();
+    this.tenantController = new AbortController();
+  }
+
+  private async request<T>(
+    path: string,
+    init?: RequestInit,
+    tenantScoped = false,
+  ): Promise<T> {
     const token = await this.tokenProvider();
     const response = await fetch(`${publicEnv.apiUrl}/v1${path}`, {
       ...init,
@@ -35,15 +49,22 @@ export class TraceGuardClient {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...init?.headers,
       },
+      ...(tenantScoped
+        ? { signal: this.tenantController.signal }
+        : init?.signal
+          ? { signal: init.signal }
+          : {}),
     });
     if (!response.ok) {
       const problem = (await response.json().catch(() => undefined)) as
         ProblemDetails | undefined;
-      throw new TraceGuardApiError(
+      const error = new TraceGuardApiError(
         problem?.detail ?? `TraceGuard API returned ${response.status}.`,
         response.status,
         problem,
       );
+      if (response.status === 401) this.onSessionExpired?.();
+      throw error;
     }
     return response.json() as Promise<T>;
   }
@@ -61,13 +82,21 @@ export class TraceGuardClient {
   }
 
   getOrganization(slug: string) {
-    return this.request<OrganizationDetail>(`/organizations/${slug}`);
+    return this.request<OrganizationDetail>(
+      `/organizations/${slug}`,
+      undefined,
+      true,
+    );
   }
 
   updateOrganization(slug: string, input: UpdateOrganizationRequest) {
-    return this.request<OrganizationDetail>(`/organizations/${slug}`, {
-      body: JSON.stringify(input),
-      method: "PATCH",
-    });
+    return this.request<OrganizationDetail>(
+      `/organizations/${slug}`,
+      {
+        body: JSON.stringify(input),
+        method: "PATCH",
+      },
+      true,
+    );
   }
 }

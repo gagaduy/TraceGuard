@@ -16,6 +16,7 @@ import {
 import type { CurrentIdentity } from "@/lib/access/types";
 import { TraceGuardClient } from "@/lib/api/traceguard-client";
 import { getKeycloak } from "@/lib/auth/keycloak";
+import { rememberSafeReturnUrl } from "@/lib/auth/safe-return-url";
 
 type AuthState = {
   api: TraceGuardClient;
@@ -36,14 +37,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
 
+  const expireSession = useCallback(() => {
+    if (typeof window === "undefined") return;
+    rememberSafeReturnUrl(window.location.pathname);
+    if (window.location.pathname !== "/session-expired") {
+      window.location.assign("/session-expired");
+    }
+  }, []);
+
   const api = useMemo(
     () =>
       new TraceGuardClient(async () => {
         const keycloak = getKeycloak();
-        if (keycloak.authenticated) await keycloak.updateToken(30);
+        if (keycloak.authenticated) {
+          try {
+            await keycloak.updateToken(30);
+          } catch (cause) {
+            expireSession();
+            throw cause;
+          }
+        }
         return keycloak.token;
-      }),
-    [],
+      }, expireSession),
+    [expireSession],
   );
 
   const refreshIdentity = useCallback(async () => {
@@ -61,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         checkLoginIframe: false,
         onLoad: "check-sso",
         pkceMethod: "S256",
+        silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
       })
       .then(async (isAuthenticated) => {
         if (!active) return;

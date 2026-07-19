@@ -28,7 +28,7 @@ export default function Home() {
     <main>
       <nav
         aria-label="Primary navigation"
-        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-10"
+        className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:px-6 sm:py-6 lg:px-10"
       >
         <a
           href="#top"
@@ -40,20 +40,26 @@ export default function Home() {
           >
             TG
           </span>
-          TraceGuard
+          <span className="hidden sm:inline">TraceGuard</span>
         </a>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <a
-            className={buttonVariants({ variant: "ghost", size: "compact" })}
+            className={cn(
+              "hidden md:inline-flex",
+              buttonVariants({ variant: "ghost", size: "compact" }),
+            )}
             href="#architecture"
           >
             Architecture
           </a>
           <a
-            className={buttonVariants({
-              variant: "secondary",
-              size: "compact",
-            })}
+            className={cn(
+              "hidden sm:inline-flex",
+              buttonVariants({
+                variant: "secondary",
+                size: "compact",
+              }),
+            )}
             href="https://github.com/gagaduy/TraceGuard"
           >
             GitHub
