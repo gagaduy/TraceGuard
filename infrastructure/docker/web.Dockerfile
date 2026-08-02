@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 TraceGuard contributors
 # SPDX-License-Identifier: Apache-2.0
 
-FROM node:24.13.0-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f AS base
+FROM node:26.5.1-bookworm-slim@sha256:9e6f9357d371591e32ab6f2d8a26d63bdd0d17c29eee3f4f3e7e454d9634bf73 AS base
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
@@ -26,7 +26,7 @@ COPY . .
 
 RUN pnpm --filter @traceguard/web... build
 
-FROM node:24.13.0-bookworm-slim@sha256:4660b1ca8b28d6d1906fd644abe34b2ed81d15434d26d845ef0aced307cf4b6f AS runner
+FROM node:26.5.1-bookworm-slim@sha256:9e6f9357d371591e32ab6f2d8a26d63bdd0d17c29eee3f4f3e7e454d9634bf73 AS runner
 
 ARG BUILD_DATE=unknown
 ARG VCS_REF=unknown
